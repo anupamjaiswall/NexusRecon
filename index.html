@@ -67,11 +67,37 @@
           <input type="text" id="targetDomain" placeholder="e.g., example.com" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white" />
           <button id="clearDomain" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md dork-btn justify-center">Clear</button>
         </div>
-        <p id="error-message" class="text-red-400 mt-2 hidden">Please enter a target domain.</p>
+        <p id="error-message" class="text-red-400 mt-2 hidden"></p>
       </div>
 
       <!-- Dork Categories -->
       <div class="space-y-10">
+      
+        <!-- AI-Powered Dork Builder -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">✨ AI-Powered Dork Builder</h2>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
+                <p class="text-gray-400">Describe the vulnerability or file you're looking for, and let AI build the perfect dork for you.</p>
+                <div>
+                    <label for="ai-prompt" class="block text-lg font-medium text-gray-300 mb-2">Your Request:</label>
+                    <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white">
+                </div>
+                <button id="generate-ai-dork" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-md dork-btn justify-center">
+                    Generate Dork
+                </button>
+                <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">✨ Generating dork...</p>
+                <div id="ai-result-container" class="hidden mt-4">
+                    <label class="block text-lg font-medium text-gray-300 mb-2">Generated Dork:</label>
+                    <div class="bg-gray-700 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
+                        <div class="flex flex-row gap-2 self-end sm:self-center">
+                             <button id="copy-ai-dork" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md text-sm">Copy</button>
+                             <button id="search-ai-dork" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Basic Recon -->
         <div>
@@ -133,6 +159,19 @@
       <p class="mt-4 text-sm italic">Made with <span class="text-red-500">&hearts;</span> by 4n1_1p4m</p>
     </footer>
   </div>
+  
+  <!-- Live2D Widget Settings -->
+  <script>
+    // Overriding default settings for the Live2D Widget
+    // This script must be placed BEFORE the autoload.js script
+    var live2d_settings = {
+        "display": {
+            "position": "right", // Positioned on the bottom right
+            "width": 132,        // Made smaller
+            "height": 265        // Made smaller
+        }
+    };
+  </script>
 
   <!-- Live2D Widget Script -->
   <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
@@ -144,19 +183,28 @@
       const dorkItems = document.querySelectorAll('.dork-item');
       const clearButton = document.getElementById('clearDomain');
 
+      // AI Dork Builder Elements
+      const generateAiDorkBtn = document.getElementById('generate-ai-dork');
+      const aiPromptInput = document.getElementById('ai-prompt');
+      const aiResultContainer = document.getElementById('ai-result-container');
+      const aiDorkOutput = document.getElementById('ai-dork-output');
+      const copyAiDorkBtn = document.getElementById('copy-ai-dork');
+      const searchAiDorkBtn = document.getElementById('search-ai-dork');
+      const aiLoadingMessage = document.getElementById('ai-loading-message');
+
       const executeDork = (event) => {
         // Prevent executing dork if the copy button inside was clicked
         if (event.target.classList.contains('copy-btn')) return;
 
         const domain = targetDomainInput.value.trim();
         if (!domain) {
+          errorMessage.textContent = 'Please enter a target domain for the pre-built dorks.';
           errorMessage.classList.remove('hidden');
           targetDomainInput.focus();
           return;
         }
         errorMessage.classList.add('hidden');
         
-        // Find the dork button within the clicked item
         const dorkButton = event.currentTarget.querySelector('.dork-btn');
         const dorkTemplate = dorkButton.getAttribute('data-dork');
         
@@ -170,6 +218,7 @@
       const copyDork = (copyBtn) => {
         const domain = targetDomainInput.value.trim();
         if (!domain) {
+          errorMessage.textContent = 'Please enter a target domain first.';
           errorMessage.classList.remove('hidden');
           targetDomainInput.focus();
           return;
@@ -180,7 +229,6 @@
         const dorkTemplate = dorkBtn.getAttribute('data-dork');
         const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
         
-        // Use the 'copy' command for wider browser support in iFrames
         const textArea = document.createElement('textarea');
         textArea.value = finalDork;
         document.body.appendChild(textArea);
@@ -198,21 +246,18 @@
       };
 
       dorkItems.forEach(item => {
-        // Click on the whole item to search
         item.addEventListener('click', executeDork);
         
-        // Find the copy button inside and attach its specific listener
         const copyButton = item.querySelector('.copy-btn');
         if (copyButton) {
             copyButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent the item's click event from firing
+                e.stopPropagation();
                 copyDork(copyButton);
             });
         }
       });
 
       clearButton.addEventListener('click', (e) => {
-        // This is a button, not a dork-item, so it needs its own listener
         e.stopPropagation();
         targetDomainInput.value = '';
         errorMessage.classList.add('hidden');
@@ -223,6 +268,107 @@
         if (targetDomainInput.value.trim()) {
           errorMessage.classList.add('hidden');
         }
+      });
+
+      // --- Gemini AI Dork Generation Logic ---
+      const generateAiDork = async () => {
+          const domain = targetDomainInput.value.trim();
+          const userRequest = aiPromptInput.value.trim();
+
+          if (!domain) {
+              errorMessage.textContent = 'Please enter a target domain for the AI builder.';
+              errorMessage.classList.remove('hidden');
+              targetDomainInput.focus();
+              return;
+          }
+          if (!userRequest) {
+              errorMessage.textContent = 'Please describe what you are looking for in the AI builder.';
+              errorMessage.classList.remove('hidden');
+              aiPromptInput.focus();
+              return;
+          }
+
+          generateAiDorkBtn.disabled = true;
+          aiLoadingMessage.classList.remove('hidden');
+          aiResultContainer.classList.add('hidden');
+          errorMessage.classList.add('hidden');
+
+          const prompt = `You are an expert security researcher specializing in Google Dorking for bug bounty hunting. Your task is to generate a single, precise, and effective Google Dork query.
+Rules:
+- The output must be ONLY the dork query itself.
+- Do not include any explanations, introductory text, or markdown formatting like \`\`\`.
+- The dork must be tailored to the user's request and the specified target domain.
+- Use advanced operators like site:, inurl:, intitle:, filetype:, ext:, etc., where appropriate.
+- If the user asks for something general like "vulnerabilities", create a dork for a common, high-impact finding like exposed config files or sensitive documents.
+
+Target Domain: "${domain}"
+User's Request: "${userRequest}"
+
+Generate the Google Dork:`;
+
+          try {
+              let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+              const payload = { contents: chatHistory };
+              const apiKey = ""; // API key is handled by the environment
+              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+              const response = await fetch(apiUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+              });
+
+              if (!response.ok) {
+                  throw new Error(`API request failed with status ${response.status}`);
+              }
+
+              const result = await response.json();
+
+              if (result.candidates && result.candidates.length > 0 &&
+                  result.candidates[0].content && result.candidates[0].content.parts &&
+                  result.candidates[0].content.parts.length > 0) {
+                  const generatedDork = result.candidates[0].content.parts[0].text.trim();
+                  aiDorkOutput.textContent = generatedDork;
+                  aiResultContainer.classList.remove('hidden');
+              } else {
+                  throw new Error('Invalid response structure from API.');
+              }
+
+          } catch (error) {
+              console.error("Error generating AI dork:", error);
+              aiDorkOutput.textContent = 'Sorry, something went wrong. Please try again.';
+              aiResultContainer.classList.remove('hidden');
+          } finally {
+              generateAiDorkBtn.disabled = false;
+              aiLoadingMessage.classList.add('hidden');
+          }
+      };
+
+      generateAiDorkBtn.addEventListener('click', generateAiDork);
+
+      copyAiDorkBtn.addEventListener('click', () => {
+          const dorkToCopy = aiDorkOutput.textContent;
+          const textArea = document.createElement('textarea');
+          textArea.value = dorkToCopy;
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+              document.execCommand('copy');
+              copyAiDorkBtn.textContent = 'Copied!';
+          } catch (err) {
+              console.error('Failed to copy text: ', err);
+              copyAiDorkBtn.textContent = 'Error!';
+          }
+          document.body.removeChild(textArea);
+          setTimeout(() => copyAiDorkBtn.textContent = 'Copy', 1500);
+      });
+
+      searchAiDorkBtn.addEventListener('click', () => {
+          const dorkToSearch = aiDorkOutput.textContent;
+          if (dorkToSearch) {
+              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`;
+              window.open(searchUrl, '_blank');
+          }
       });
     });
   </script>
