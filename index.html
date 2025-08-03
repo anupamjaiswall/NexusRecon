@@ -154,6 +154,11 @@
     .dork-text {
         color: #00ffdd;
     }
+    .dork-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-200">
@@ -211,7 +216,7 @@
         <!-- Basic Recon -->
         <div>
           <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Basic Recon</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="dork-grid">
             <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
             <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
             <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login'><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
@@ -219,7 +224,46 @@
           </div>
         </div>
 
-        <!-- And so on for other categories... -->
+        <!-- Credentials & Sensitive Keys -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Credentials & Sensitive Keys</h2>
+            <div class="dork-grid">
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+        
+        <!-- Backup Files -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Backups & Database Dumps</h2>
+            <div class="dork-grid">
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+
+        <!-- Sensitive Files -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Sensitive Documents</h2>
+            <div class="dork-grid">
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+
+        <!-- Test Endpoints -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Test Endpoints & Errors</h2>
+            <div class="dork-grid">
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
 
       </div>
     </main>
@@ -236,7 +280,9 @@
         "display": {
             "position": "right",
             "width": 132,
-            "height": 265
+            "height": 265,
+            "hOffset": 0,
+            "vOffset": -20
         }
     };
   </script>
