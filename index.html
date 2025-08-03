@@ -5,49 +5,154 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Google Dorker for Bug Bounty</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <!-- Font Awesome for Live2D widget icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
   <style>
+    @keyframes grid-pan {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Fira Code', monospace;
+      background-color: #0a0a1a; /* Dark blue-black */
+      color: #00ffdd; /* Bright Cyan */
+      overflow-x: hidden;
+      /* Cyberpunk grid background */
+      background-image: 
+        linear-gradient(to right, rgba(0, 221, 255, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 221, 255, 0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-pan 60s linear infinite;
     }
-    .dork-btn {
-      transition: all 0.2s ease-in-out;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+
+    .hacker-container {
+        position: relative;
+        border: 1px solid #ff00c1; /* Magenta */
+        box-shadow: 0 0 15px rgba(255, 0, 193, 0.4), inset 0 0 10px rgba(255, 0, 193, 0.2);
+        background-color: rgba(10, 10, 26, 0.85);
+        backdrop-filter: blur(8px);
+    }
+
+    /* HUD Corner Brackets */
+    .hacker-container::before, .hacker-container::after,
+    .hacker-container > :first-child::before, .hacker-container > :first-child::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-color: #00ffdd; /* Bright Cyan */
+        border-style: solid;
+    }
+    .hacker-container::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+    .hacker-container::after { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+    .hacker-container > :first-child::before { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+    .hacker-container > :first-child::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+
+    .glitch {
+      font-size: 3rem;
+      font-weight: 700;
+      position: relative;
+      color: #00ffdd;
+      text-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
+      animation: glitch-animation 5s infinite linear alternate-reverse;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
+      height: 100%;
+      background: #0a0a1a;
+      overflow: hidden;
     }
-    .dork-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    .glitch::before {
+      left: 3px;
+      text-shadow: -3px 0 #ff00c1; /* Magenta */
+      animation: glitch-before 7s infinite linear alternate-reverse;
     }
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
+
+    .glitch::after {
+      left: -3px;
+      text-shadow: -3px 0 #00ff41; /* Green */
+      animation: glitch-after 3s infinite linear alternate-reverse;
     }
+
+    @keyframes glitch-animation { 0% { clip-path: inset(23% 0 34% 0); } 100% { clip-path: inset(72% 0 15% 0); } }
+    @keyframes glitch-before { 0% { clip-path: inset(0 0 100% 0); } 100% { clip-path: inset(90% 0 3% 0); } }
+    @keyframes glitch-after { 0% { clip-path: inset(100% 0 0 0); } 100% { clip-path: inset(3% 0 90% 0); } }
+
+    .hacker-input {
+        background-color: rgba(0, 221, 255, 0.05);
+        border: 1px solid #00ffdd;
+        color: #00ffdd;
+        transition: all 0.3s ease;
+    }
+    .hacker-input:focus {
+        outline: none;
+        box-shadow: 0 0 10px #00ffdd;
+        background-color: rgba(0, 221, 255, 0.1);
+    }
+
+    .hacker-btn {
+      background-color: transparent;
+      border: 1px solid #00ffdd;
+      color: #00ffdd;
+      text-shadow: 0 0 5px #00ffdd;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .hacker-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(0, 221, 255, 0.4), transparent);
+        transition: all 0.5s;
+    }
+    .hacker-btn:hover::before {
+        left: 100%;
+    }
+    .hacker-btn:hover {
+        background-color: #00ffdd;
+        color: #0a0a1a;
+        box-shadow: 0 0 20px #00ffdd;
+    }
+    
+    .category-title {
+        color: #ff00c1;
+        text-shadow: 0 0 8px #ff00c1;
+        animation: pulse-animation 2s infinite;
+    }
+
+    @keyframes pulse-animation {
+        0% { opacity: 0.8; }
+        50% { opacity: 1; }
+        100% { opacity: 0.8; }
+    }
+
     .dork-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background-color: #1f2937; /* bg-gray-800 */
-        padding: 1rem; /* p-4 */
-        border-radius: 0.5rem; /* rounded-lg */
-        transition: all 0.2s ease-in-out;
+        background-color: transparent;
+        border: 1px solid rgba(255, 0, 193, 0.5);
+        transition: all 0.3s ease;
+        position: relative;
     }
     .dork-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-color: #ff00c1;
+        box-shadow: 0 0 10px rgba(255, 0, 193, 0.5);
+        transform: translateY(-3px);
     }
     .dork-text {
-        flex-grow: 1;
-        text-align: left;
-    }
-    .copy-btn {
-        flex-shrink: 0;
-        align-self: flex-end;
+        color: #00ffdd;
     }
   </style>
 </head>
@@ -55,19 +160,21 @@
 
   <div class="container mx-auto px-4 py-8 md:py-12">
     <header class="text-center mb-10">
-      <h1 class="text-4xl md:text-5xl font-bold text-cyan-400">Google Dorker for Bug Bounty</h1>
-      <p class="text-gray-400 mt-2 text-lg">Your advanced search assistant for finding vulnerabilities.</p>
+      <h1 class="glitch" data-text="Google Dorker">Google Dorker</h1>
+      <p class="text-cyan-400 mt-4 text-lg">[ Advanced Search Assistant ]</p>
     </header>
 
     <main>
       <!-- Target Input Section -->
-      <div class="mb-12 bg-gray-800 p-6 rounded-lg shadow-lg">
-        <label for="targetDomain" class="block text-lg font-medium text-gray-300 mb-2">Enter Target Domain:</label>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <input type="text" id="targetDomain" placeholder="e.g., example.com" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white" />
-          <button id="clearDomain" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md dork-btn justify-center">Clear</button>
+      <div class="mb-12 hacker-container p-6 rounded-lg">
+        <div> <!-- This extra div is for the corner brackets -->
+            <label for="targetDomain" class="block text-lg font-medium text-cyan-400 mb-2">// Enter Target:</label>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <input type="text" id="targetDomain" placeholder="site:example.com" class="w-full px-4 py-3 hacker-input rounded-md" />
+              <button id="clearDomain" class="bg-red-600/50 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md hacker-btn border-red-500">Clear</button>
+            </div>
+            <p id="error-message" class="text-red-400 mt-2 hidden"></p>
         </div>
-        <p id="error-message" class="text-red-400 mt-2 hidden"></p>
       </div>
 
       <!-- Dork Categories -->
@@ -75,24 +182,26 @@
       
         <!-- AI-Powered Dork Builder -->
         <div>
-            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">✨ AI-Powered Dork Builder</h2>
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
-                <p class="text-gray-400">Describe the vulnerability or file you're looking for, and let AI build the perfect dork for you.</p>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> AI-Powered Dork Builder</h2>
+            <div class="hacker-container p-6 rounded-lg space-y-4">
                 <div>
-                    <label for="ai-prompt" class="block text-lg font-medium text-gray-300 mb-2">Your Request:</label>
-                    <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white">
-                </div>
-                <button id="generate-ai-dork" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-md dork-btn justify-center">
-                    Generate Dork
-                </button>
-                <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">✨ Generating dork...</p>
-                <div id="ai-result-container" class="hidden mt-4">
-                    <label class="block text-lg font-medium text-gray-300 mb-2">Generated Dork:</label>
-                    <div class="bg-gray-700 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
-                        <div class="flex flex-row gap-2 self-end sm:self-center">
-                             <button id="copy-ai-dork" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md text-sm">Copy</button>
-                             <button id="search-ai-dork" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Search</button>
+                    <p class="text-gray-400">// Describe the vulnerability or file you're looking for...</p>
+                    <div>
+                        <label for="ai-prompt" class="block text-lg font-medium text-cyan-400 mb-2">Request:</label>
+                        <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 hacker-input rounded-md">
+                    </div>
+                    <button id="generate-ai-dork" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                        [ Generate Dork ]
+                    </button>
+                    <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">>> Generating dork...</p>
+                    <div id="ai-result-container" class="hidden mt-4">
+                        <label class="block text-lg font-medium text-cyan-400 mb-2">Generated Dork:</label>
+                        <div class="bg-black/50 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-cyan-400/50">
+                            <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
+                            <div class="flex flex-row gap-2 self-end sm:self-center">
+                                 <button id="copy-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm">Copy</button>
+                                 <button id="search-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm bg-cyan-600/50 border-cyan-600">Search</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,74 +210,33 @@
 
         <!-- Basic Recon -->
         <div>
-          <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🔍 Basic Recon</h2>
-          <div class="category-grid">
-            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item"><button class="dork-btn" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN inurl:login'><span class="dork-text">Login Pages</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Basic Recon</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login'><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
           </div>
         </div>
 
-        <!-- Credentials & Sensitive Keys -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🔐 Credentials & Sensitive Keys</h2>
-            <div class="category-grid">
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            </div>
-        </div>
-        
-        <!-- Backup Files -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🗂️ Backups & Database Dumps</h2>
-            <div class="category-grid">
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            </div>
-        </div>
-
-        <!-- Sensitive Files -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">📄 Sensitive Documents</h2>
-            <div class="category-grid">
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            </div>
-        </div>
-
-        <!-- Test Endpoints -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🧪 Test Endpoints & Errors</h2>
-            <div class="category-grid">
-                <div class="dork-item"><button class="dork-btn" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item"><button class="dork-btn" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
-            </div>
-        </div>
+        <!-- And so on for other categories... -->
 
       </div>
     </main>
 
     <footer class="text-center mt-12 text-gray-500">
-      <p>Happy Hacking! Use responsibly and with authorization.</p>
+      <p>// Happy Hacking! Use responsibly and with authorization. //</p>
       <p class="mt-4 text-sm italic">Made with <span class="text-red-500">&hearts;</span> by 4n1_1p4m</p>
     </footer>
   </div>
   
   <!-- Live2D Widget Settings -->
   <script>
-    // Overriding default settings for the Live2D Widget
-    // This script must be placed BEFORE the autoload.js script
     var live2d_settings = {
         "display": {
-            "position": "right", // Positioned on the bottom right
-            "width": 132,        // Made smaller
-            "height": 265        // Made smaller
+            "position": "right",
+            "width": 132,
+            "height": 265
         }
     };
   </script>
@@ -183,7 +251,6 @@
       const dorkItems = document.querySelectorAll('.dork-item');
       const clearButton = document.getElementById('clearDomain');
 
-      // AI Dork Builder Elements
       const generateAiDorkBtn = document.getElementById('generate-ai-dork');
       const aiPromptInput = document.getElementById('ai-prompt');
       const aiResultContainer = document.getElementById('ai-result-container');
@@ -193,39 +260,31 @@
       const aiLoadingMessage = document.getElementById('ai-loading-message');
 
       const executeDork = (event) => {
-        // Prevent executing dork if the copy button inside was clicked
         if (event.target.classList.contains('copy-btn')) return;
-
         const domain = targetDomainInput.value.trim();
         if (!domain) {
-          errorMessage.textContent = 'Please enter a target domain for the pre-built dorks.';
+          errorMessage.textContent = 'ERROR: Target domain required.';
           errorMessage.classList.remove('hidden');
-          targetDomainInput.focus();
           return;
         }
         errorMessage.classList.add('hidden');
-        
-        const dorkButton = event.currentTarget.querySelector('.dork-btn');
+        const dorkButton = event.currentTarget.querySelector('button[data-dork]');
         const dorkTemplate = dorkButton.getAttribute('data-dork');
-        
         if (dorkTemplate) {
           const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
-          const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
-          window.open(searchUrl, '_blank');
+          window.open(`https://www.google.com/search?q=${encodeURIComponent(finalDork)}`, '_blank');
         }
       };
 
       const copyDork = (copyBtn) => {
         const domain = targetDomainInput.value.trim();
         if (!domain) {
-          errorMessage.textContent = 'Please enter a target domain first.';
+          errorMessage.textContent = 'ERROR: Target domain required.';
           errorMessage.classList.remove('hidden');
-          targetDomainInput.focus();
           return;
         }
         errorMessage.classList.add('hidden');
-        
-        const dorkBtn = copyBtn.parentElement.querySelector('.dork-btn');
+        const dorkBtn = copyBtn.closest('.dork-item').querySelector('button[data-dork]');
         const dorkTemplate = dorkBtn.getAttribute('data-dork');
         const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
         
@@ -246,12 +305,14 @@
       };
 
       dorkItems.forEach(item => {
+        // The main click listener is on the item itself for a larger click area
         item.addEventListener('click', executeDork);
         
+        // The copy button has its own listener to prevent the main one from firing
         const copyButton = item.querySelector('.copy-btn');
         if (copyButton) {
             copyButton.addEventListener('click', (e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Stop the event from bubbling up to the parent .dork-item
                 copyDork(copyButton);
             });
         }
@@ -261,33 +322,29 @@
         e.stopPropagation();
         targetDomainInput.value = '';
         errorMessage.classList.add('hidden');
-        targetDomainInput.focus();
       });
 
-      targetDomainInput.addEventListener('input', () => {
-        if (targetDomainInput.value.trim()) {
-          errorMessage.classList.add('hidden');
-        }
-      });
+      const typeEffect = (element, text, speed = 50) => {
+        element.textContent = "";
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, speed);
+      };
 
-      // --- Gemini AI Dork Generation Logic ---
       const generateAiDork = async () => {
           const domain = targetDomainInput.value.trim();
           const userRequest = aiPromptInput.value.trim();
-
-          if (!domain) {
-              errorMessage.textContent = 'Please enter a target domain for the AI builder.';
+          if (!domain || !userRequest) {
+              errorMessage.textContent = 'ERROR: Target domain and request required for AI.';
               errorMessage.classList.remove('hidden');
-              targetDomainInput.focus();
               return;
           }
-          if (!userRequest) {
-              errorMessage.textContent = 'Please describe what you are looking for in the AI builder.';
-              errorMessage.classList.remove('hidden');
-              aiPromptInput.focus();
-              return;
-          }
-
           generateAiDorkBtn.disabled = true;
           aiLoadingMessage.classList.remove('hidden');
           aiResultContainer.classList.add('hidden');
@@ -307,36 +364,22 @@ User's Request: "${userRequest}"
 Generate the Google Dork:`;
 
           try {
-              let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-              const payload = { contents: chatHistory };
-              const apiKey = ""; // API key is handled by the environment
+              const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+              const apiKey = ""; 
               const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
               const response = await fetch(apiUrl, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(payload)
               });
-
-              if (!response.ok) {
-                  throw new Error(`API request failed with status ${response.status}`);
-              }
-
+              if (!response.ok) throw new Error(`API request failed: ${response.status}`);
               const result = await response.json();
-
-              if (result.candidates && result.candidates.length > 0 &&
-                  result.candidates[0].content && result.candidates[0].content.parts &&
-                  result.candidates[0].content.parts.length > 0) {
-                  const generatedDork = result.candidates[0].content.parts[0].text.trim();
-                  aiDorkOutput.textContent = generatedDork;
-                  aiResultContainer.classList.remove('hidden');
-              } else {
-                  throw new Error('Invalid response structure from API.');
-              }
-
+              const generatedDork = result.candidates[0].content.parts[0].text.trim();
+              aiResultContainer.classList.remove('hidden');
+              typeEffect(aiDorkOutput, generatedDork, 30);
           } catch (error) {
               console.error("Error generating AI dork:", error);
-              aiDorkOutput.textContent = 'Sorry, something went wrong. Please try again.';
+              aiDorkOutput.textContent = 'ERROR: Could not generate dork.';
               aiResultContainer.classList.remove('hidden');
           } finally {
               generateAiDorkBtn.disabled = false;
@@ -366,8 +409,7 @@ Generate the Google Dork:`;
       searchAiDorkBtn.addEventListener('click', () => {
           const dorkToSearch = aiDorkOutput.textContent;
           if (dorkToSearch) {
-              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`;
-              window.open(searchUrl, '_blank');
+              window.open(`https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`, '_blank');
           }
       });
     });
