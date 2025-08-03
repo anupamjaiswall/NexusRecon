@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Dorker for Bug Bounty</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .dork-btn {
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .dork-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .dork-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: #1f2937; /* bg-gray-800 */
+        padding: 1rem; /* p-4 */
+        border-radius: 0.5rem; /* rounded-lg */
+        transition: all 0.2s ease-in-out;
+    }
+    .dork-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .dork-text {
+        flex-grow: 1;
+        text-align: left;
+    }
+    .copy-btn {
+        flex-shrink: 0;
+        align-self: flex-end;
+    }
+    /* Cat Styles */
+    #cat-container {
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        z-index: 9999;
+        pointer-events: none; /* Allows clicking through the cat */
+    }
+    .cat {
+        width: 80px;
+        height: 80px;
+        background-color: #333;
+        border-radius: 50% 50% 20% 20%;
+        position: relative;
+        border: 3px solid #111;
+    }
+    .cat::before, .cat::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-bottom: 25px solid #333;
+        top: -15px;
+    }
+    .cat::before {
+        left: 5px;
+        transform: rotate(-15deg);
+    }
+    .cat::after {
+        right: 5px;
+        transform: rotate(15deg);
+    }
+    .eye {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        background-color: white;
+        border-radius: 50%;
+        top: 25px;
+    }
+    .left-eye {
+        left: 15px;
+    }
+    .right-eye {
+        right: 15px;
+    }
+    .pupil {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: black;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+  <div class="container mx-auto px-4 py-8 md:py-12">
+    <header class="text-center mb-10">
+      <h1 class="text-4xl md:text-5xl font-bold text-cyan-400">Google Dorker for Bug Bounty</h1>
+      <p class="text-gray-400 mt-2 text-lg">Your advanced search assistant for finding vulnerabilities.</p>
+    </header>
+
+    <main>
+      <!-- Target Input Section -->
+      <div class="mb-12 bg-gray-800 p-6 rounded-lg shadow-lg">
+        <label for="targetDomain" class="block text-lg font-medium text-gray-300 mb-2">Enter Target Domain:</label>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <input type="text" id="targetDomain" placeholder="e.g., example.com" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white" />
+          <button id="clearDomain" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md dork-btn justify-center">Clear</button>
+        </div>
+        <p id="error-message" class="text-red-400 mt-2 hidden">Please enter a target domain.</p>
+      </div>
+
+      <!-- Dork Categories -->
+      <div class="space-y-10">
+
+        <!-- Basic Recon -->
+        <div>
+          <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🔍 Basic Recon</h2>
+          <div class="category-grid">
+            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item"><button class="dork-btn" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN inurl:login'><span class="dork-text">Login Pages</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+          </div>
+        </div>
+
+        <!-- Credentials & Sensitive Keys -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🔐 Credentials & Sensitive Keys</h2>
+            <div class="category-grid">
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+        
+        <!-- Backup Files -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🗂️ Backups & Database Dumps</h2>
+            <div class="category-grid">
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+
+        <!-- Sensitive Files -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">📄 Sensitive Documents</h2>
+            <div class="category-grid">
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+
+        <!-- Test Endpoints -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold text-cyan-300 border-b-2 border-gray-700 pb-2 mb-4">🧪 Test Endpoints & Errors</h2>
+            <div class="category-grid">
+                <div class="dork-item"><button class="dork-btn" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item"><button class="dork-btn" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded-md text-sm">Copy</button></div>
+            </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="text-center mt-12 text-gray-500">
+      <p>Happy Hacking! Use responsibly and with authorization.</p>
+    </footer>
+  </div>
+
+  <!-- Cat Companion -->
+  <div id="cat-container">
+      <div class="cat">
+          <div class="eye left-eye"><div class="pupil"></div></div>
+          <div class="eye right-eye"><div class="pupil"></div></div>
+      </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const targetDomainInput = document.getElementById('targetDomain');
+      const errorMessage = document.getElementById('error-message');
+      const dorkItems = document.querySelectorAll('.dork-item');
+      const clearButton = document.getElementById('clearDomain');
+
+      const executeDork = (event) => {
+        // Prevent executing dork if the copy button inside was clicked
+        if (event.target.classList.contains('copy-btn')) return;
+
+        const domain = targetDomainInput.value.trim();
+        if (!domain) {
+          errorMessage.classList.remove('hidden');
+          targetDomainInput.focus();
+          return;
+        }
+        errorMessage.classList.add('hidden');
+        
+        // Find the dork button within the clicked item
+        const dorkButton = event.currentTarget.querySelector('.dork-btn');
+        const dorkTemplate = dorkButton.getAttribute('data-dork');
+        
+        if (dorkTemplate) {
+          const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
+          const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+          window.open(searchUrl, '_blank');
+        }
+      };
+
+      const copyDork = (copyBtn) => {
+        const domain = targetDomainInput.value.trim();
+        if (!domain) {
+          errorMessage.classList.remove('hidden');
+          targetDomainInput.focus();
+          return;
+        }
+        errorMessage.classList.add('hidden');
+        
+        const dorkBtn = copyBtn.parentElement.querySelector('.dork-btn');
+        const dorkTemplate = dorkBtn.getAttribute('data-dork');
+        const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
+        
+        // Use the 'copy' command for wider browser support in iFrames
+        const textArea = document.createElement('textarea');
+        textArea.value = finalDork;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            copyBtn.textContent = 'Error!';
+        }
+        document.body.removeChild(textArea);
+
+        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+      };
+
+      dorkItems.forEach(item => {
+        // Click on the whole item to search
+        item.addEventListener('click', executeDork);
+        
+        // Find the copy button inside and attach its specific listener
+        const copyButton = item.querySelector('.copy-btn');
+        if (copyButton) {
+            copyButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent the item's click event from firing
+                copyDork(copyButton);
+            });
+        }
+      });
+
+      clearButton.addEventListener('click', (e) => {
+        // This is a button, not a dork-item, so it needs its own listener
+        e.stopPropagation();
+        targetDomainInput.value = '';
+        errorMessage.classList.add('hidden');
+        targetDomainInput.focus();
+      });
+
+      targetDomainInput.addEventListener('input', () => {
+        if (targetDomainInput.value.trim()) {
+          errorMessage.classList.add('hidden');
+        }
+      });
+
+      // Cat eye movement logic
+      const eyes = document.querySelectorAll('.eye');
+      document.addEventListener('mousemove', (e) => {
+          eyes.forEach(eye => {
+              const { left, top, width, height } = eye.getBoundingClientRect();
+              const eyeCenterX = left + width / 2;
+              const eyeCenterY = top + height / 2;
+              const radian = Math.atan2(e.pageX - eyeCenterX, e.pageY - eyeCenterY);
+              const rot = (radian * (180 / Math.PI) * -1) + 90;
+              eye.querySelector('.pupil').style.transform = `rotate(${rot}deg)`;
+          });
+      });
+    });
+  </script>
+
+</body>
+</html>
