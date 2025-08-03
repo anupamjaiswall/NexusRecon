@@ -6,6 +6,8 @@
   <title>Google Dorker for Bug Bounty</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for Live2D widget icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -46,64 +48,6 @@
     .copy-btn {
         flex-shrink: 0;
         align-self: flex-end;
-    }
-    /* Cat Styles */
-    #cat-container {
-        position: fixed;
-        bottom: 10px;
-        right: 20px;
-        z-index: 9999;
-        pointer-events: none; /* Allows clicking through the cat */
-    }
-    .cat {
-        width: 80px;
-        height: 80px;
-        background-color: #333;
-        border-radius: 50% 50% 20% 20%;
-        position: relative;
-        border: 3px solid #111;
-    }
-    .cat::before, .cat::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 0;
-        border-left: 15px solid transparent;
-        border-right: 15px solid transparent;
-        border-bottom: 25px solid #333;
-        top: -15px;
-    }
-    .cat::before {
-        left: 5px;
-        transform: rotate(-15deg);
-    }
-    .cat::after {
-        right: 5px;
-        transform: rotate(15deg);
-    }
-    .eye {
-        position: absolute;
-        width: 25px;
-        height: 25px;
-        background-color: white;
-        border-radius: 50%;
-        top: 25px;
-    }
-    .left-eye {
-        left: 15px;
-    }
-    .right-eye {
-        right: 15px;
-    }
-    .pupil {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background-color: black;
-        border-radius: 50%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
     }
   </style>
 </head>
@@ -186,16 +130,12 @@
 
     <footer class="text-center mt-12 text-gray-500">
       <p>Happy Hacking! Use responsibly and with authorization.</p>
+      <p class="mt-4 text-sm italic">Made with <span class="text-red-500">&hearts;</span> by 4n1_1p4m</p>
     </footer>
   </div>
 
-  <!-- Cat Companion -->
-  <div id="cat-container">
-      <div class="cat">
-          <div class="eye left-eye"><div class="pupil"></div></div>
-          <div class="eye right-eye"><div class="pupil"></div></div>
-      </div>
-  </div>
+  <!-- Live2D Widget Script -->
+  <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -283,19 +223,6 @@
         if (targetDomainInput.value.trim()) {
           errorMessage.classList.add('hidden');
         }
-      });
-
-      // Cat eye movement logic
-      const eyes = document.querySelectorAll('.eye');
-      document.addEventListener('mousemove', (e) => {
-          eyes.forEach(eye => {
-              const { left, top, width, height } = eye.getBoundingClientRect();
-              const eyeCenterX = left + width / 2;
-              const eyeCenterY = top + height / 2;
-              const radian = Math.atan2(e.pageX - eyeCenterX, e.pageY - eyeCenterY);
-              const rot = (radian * (180 / Math.PI) * -1) + 90;
-              eye.querySelector('.pupil').style.transform = `rotate(${rot}deg)`;
-          });
       });
     });
   </script>
