@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dorky for Bug Bounty</title>
+  <title>NexusRecon - Advanced Recon Framework</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <!-- Font Awesome for Live2D widget icons -->
@@ -88,13 +88,13 @@
     @keyframes glitch-before { 0% { clip-path: inset(0 0 100% 0); } 100% { clip-path: inset(90% 0 3% 0); } }
     @keyframes glitch-after { 0% { clip-path: inset(100% 0 0 0); } 100% { clip-path: inset(3% 0 90% 0); } }
 
-    .hacker-input {
+    .hacker-input, .note-input {
         background-color: rgba(0, 221, 255, 0.05);
         border: 1px solid #00ffdd;
         color: #00ffdd;
         transition: all 0.3s ease;
     }
-    .hacker-input:focus {
+    .hacker-input:focus, .note-input:focus {
         outline: none;
         box-shadow: 0 0 10px #00ffdd;
         background-color: rgba(0, 221, 255, 0.1);
@@ -133,6 +133,11 @@
         text-shadow: 0 0 8px #ff00c1;
         animation: pulse-animation 2s infinite;
     }
+    
+    .subcategory-title {
+        color: #00ffdd;
+        text-shadow: 0 0 5px #00ffdd;
+    }
 
     @keyframes pulse-animation {
         0% { opacity: 0.8; }
@@ -156,7 +161,7 @@
     }
     .dork-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 1rem;
     }
     
@@ -176,8 +181,8 @@
 
   <div class="container mx-auto px-4 py-8 md:py-12">
     <header class="text-center mb-10">
-      <h1 class="glitch" data-text="Dorky">Dorky</h1>
-      <p class="text-cyan-400 mt-4 text-lg">[ Advanced Search Assistant ]</p>
+      <h1 class="glitch" data-text="NexusRecon">NexusRecon</h1>
+      <p class="text-cyan-400 mt-4 text-lg">[ Advanced Reconnaissance Framework ]</p>
     </header>
 
     <main>
@@ -186,106 +191,265 @@
         <div> <!-- This extra div is for the corner brackets -->
             <label for="targetDomain" class="block text-lg font-medium text-cyan-400 mb-2">// Enter Target:</label>
             <div class="flex flex-col sm:flex-row gap-4">
-              <input type="text" id="targetDomain" placeholder="Enter Domain or Company Name" class="w-full px-4 py-3 hacker-input rounded-md" />
+              <input type="text" id="targetDomain" placeholder="Domain, Company, or Username" class="w-full px-4 py-3 hacker-input rounded-md" />
               <button id="clearDomain" class="bg-red-600/50 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md hacker-btn border-red-500">Clear</button>
             </div>
             <p id="error-message" class="text-red-400 mt-2 hidden"></p>
         </div>
       </div>
 
-      <!-- Dork Categories -->
+      <!-- Recon Modules -->
       <div class="space-y-10">
-      
-        <!-- AI-Powered Dork Builder -->
+
+        <!-- NEW: Session History & Notes -->
         <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> AI-Powered Dork Builder</h2>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History & Notes</h2>
             <div class="hacker-container p-6 rounded-lg space-y-4">
                 <div>
-                    <p class="text-gray-400">// Describe the vulnerability or file you're looking for...</p>
-                    <div>
-                        <label for="ai-prompt" class="block text-lg font-medium text-cyan-400 mb-2">Request:</label>
-                        <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 hacker-input rounded-md">
+                    <div class="flex justify-between items-center">
+                        <p class="text-gray-400">// Your activity is saved locally in your browser...</p>
+                        <button id="clear-history" class="hacker-btn text-sm p-2 border-red-500 text-red-400">[ Clear History ]</button>
                     </div>
-                    <button id="generate-ai-dork" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
-                        [ Generate Dork ]
-                    </button>
-                    <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">>> Generating dork...</p>
-                    <div id="ai-result-container" class="hidden mt-4">
-                        <label class="block text-lg font-medium text-cyan-400 mb-2">Generated Dork:</label>
-                        <div class="bg-black/50 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-cyan-400/50">
-                            <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
-                            <div class="flex flex-row gap-2 self-end sm:self-center">
-                                 <button id="copy-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm">Copy</button>
-                                 <button id="search-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm bg-cyan-600/50 border-cyan-600">Search</button>
-                            </div>
-                        </div>
+                    <div id="history-container" class="mt-4 max-h-96 overflow-y-auto space-y-3 pr-2">
+                        <!-- History entries will be injected here -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Basic Recon -->
+        <!-- External Reconnaissance -->
         <div>
-          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Basic Recon</h2>
-          <div class="dork-grid">
-            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login | inurl:signin | intitle:"Login" | intitle:"Sign In"'><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-            <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-          </div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> OSINT & External Tools</h2>
+            <div class="hacker-container p-6 rounded-lg space-y-6">
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Infrastructure & Network Intel</h3>
+                    <div class="dork-grid">
+                        <button id="external-virustotal" class="hacker-btn p-3">[ VirusTotal ]</button>
+                        <button id="external-censys" class="hacker-btn p-3">[ Censys ]</button>
+                        <button id="external-shodan" class="hacker-btn p-3">[ Shodan ]</button>
+                        <button id="external-netlas" class="hacker-btn p-3">[ Netlas.io ]</button>
+                        <button id="external-fofa" class="hacker-btn p-3">[ FOFA.so ]</button>
+                        <button id="external-zoomeye" class="hacker-btn p-3">[ ZoomEye ]</button>
+                        <button id="external-securityheaders" class="hacker-btn p-3">[ SecurityHeaders.io ]</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// DNS, IP, & Subdomain Enumeration</h3>
+                    <div class="dork-grid">
+                        <button id="external-securitytrails" class="hacker-btn p-3">[ SecurityTrails ]</button>
+                        <button id="external-crtsh" class="hacker-btn p-3">[ crt.sh ]</button>
+                        <button id="external-dnsdumpster" class="hacker-btn p-3">[ DNSdumpster ]</button>
+                        <button id="external-passivetotal" class="hacker-btn p-3">[ PassiveTotal ]</button>
+                        <button id="external-viewdns" class="hacker-btn p-3">[ ViewDNS.info ]</button>
+                        <button id="external-whois" class="hacker-btn p-3">[ who.is ]</button>
+                        <button id="external-rapiddns" class="hacker-btn p-3">[ RapidDNS ]</button>
+                        <button id="external-ptrarchive" class="hacker-btn p-3">[ PTR Archive ]</button>
+                        <button id="external-dnslytics" class="hacker-btn p-3">[ DNSlytics ]</button>
+                        <button id="external-domainbigdata" class="hacker-btn p-3">[ DomainBigData ]</button>
+                        <button id="external-dnsdb" class="hacker-btn p-3">[ DNSDB ]</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Secrets, Code, & Leak Analysis</h3>
+                    <div class="dork-grid">
+                        <button id="external-github" class="hacker-btn p-3">[ GitHub ]</button>
+                        <button id="external-pastebin" class="hacker-btn p-3">[ Pastebin ]</button>
+                        <button id="external-leakix" class="hacker-btn p-3">[ LeakIX ]</button>
+                        <button id="external-grepapp" class="hacker-btn p-3">[ Grep.app ]</button>
+                        <button id="external-searchcode" class="hacker-btn p-3">[ Searchcode ]</button>
+                        <button id="external-grayhat" class="hacker-btn p-3">[ Grayhat Warfare ]</button>
+                        <button id="external-dehashed" class="hacker-btn p-3">[ Dehashed ]</button>
+                        <button id="external-scylla" class="hacker-btn p-3">[ Scylla.sh ]</button>
+                        <button id="external-haveibeenpwned" class="hacker-btn p-3">[ HaveIBeenPwned ]</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Archived Content & Web Analysis</h3>
+                    <div class="dork-grid">
+                        <button id="external-wayback" class="hacker-btn p-3">[ Waybackurls ]</button>
+                        <button id="external-urlscan" class="hacker-btn p-3">[ urlscan.io ]</button>
+                        <button id="external-builtwith" class="hacker-btn p-3">[ BuiltWith ]</button>
+                        <button id="external-publicwww" class="hacker-btn p-3">[ PublicWWW ]</button>
+                        <button id="external-spyonweb" class="hacker-btn p-3">[ SpyOnWeb ]</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Company, Email, & Employee Intel</h3>
+                    <div class="dork-grid">
+                        <button id="external-hunter" class="hacker-btn p-3">[ Hunter.io ]</button>
+                        <button id="external-emailrep" class="hacker-btn p-3">[ EmailRep.io ]</button>
+                        <button id="external-linkedin" class="hacker-btn p-3">[ LinkedIn Search ]</button>
+                        <button id="external-crunchbase" class="hacker-btn p-3">[ Crunchbase ]</button>
+                        <button id="external-apollo" class="hacker-btn p-3">[ Apollo.io ]</button>
+                        <button id="external-greynoise" class="hacker-btn p-3">[ GreyNoise ]</button>
+                        <button id="external-whatsmynameweb" class="hacker-btn p-3">[ WhatsMyName ]</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Alternative Search Engines</h3>
+                    <div class="dork-grid">
+                        <button id="external-qwant" class="hacker-btn p-3">[ Qwant ]</button>
+                        <button id="external-yandex" class="hacker-btn p-3">[ Yandex ]</button>
+                        <button id="external-netcraft" class="hacker-btn p-3">[ Netcraft ]</button>
+                        <button id="external-ahmia" class="hacker-btn p-3">[ Ahmia.fi (TOR) ]</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Credentials & Sensitive Keys -->
+        <!-- Google Dorking Toggle -->
         <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Credentials & Sensitive Keys</h2>
-            <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" ".ssh"'><span class="dork-text">Exposed SSH Dirs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:id_rsa -github'><span class="dork-text">Exposed SSH Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <div class="hacker-container p-6 rounded-lg">
+                <div>
+                    <button id="toggle-dorking-modules" class="w-full hacker-btn p-3 font-bold text-xl">
+                        [ Show Google Dorking Modules ]
+                    </button>
+                </div>
             </div>
         </div>
         
-        <!-- Backup Files -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Backups & Database Dumps</h2>
-            <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+        <!-- Collapsible Dorking Modules Container -->
+        <div id="dorking-modules-container" class="hidden space-y-10">
+      
+            <!-- Automated Target Profiler -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Automated Target Profiler</h2>
+                <div class="hacker-container p-6 rounded-lg space-y-4">
+                    <div>
+                        <p class="text-gray-400">// Run a sequence of essential dorks against the target...</p>
+                        <button id="initiate-profile" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                            [ Initiate Target Profile ]
+                        </button>
+                        <div id="profiler-results-container" class="hidden mt-4 pt-4 border-t border-fuchsia-500/50">
+                            <p id="profiler-status" class="text-cyan-400 mb-4"></p>
+                            <div id="profiler-results-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Sensitive Files -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Sensitive Documents</h2>
-            <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <!-- Visual Reconnaissance -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Visual Recon (Favicon Pivoting)</h2>
+                <div class="hacker-container p-6 rounded-lg space-y-4">
+                    <div>
+                        <p class="text-gray-400">// Find related infrastructure by searching for the target's favicon hash on Shodan...</p>
+                        <button id="favicon-pivot" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                            [ Find by Favicon Hash (Shodan) ]
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:&lt;hash&gt;`.</p>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Vulnerable Files & Server Info -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Vulnerable Files & Server Info</h2>
-            <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"apache tomcat" "administration"'><span class="dork-text">Tomcat Admin</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" "ws_ftp.log"'><span class="dork-text">WS_FTP Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:log "inurl:wp-content"'><span class="dork-text">WordPress Debug Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <!-- Target Tech-Stack Identifier -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Target Tech-Stack Identifier</h2>
+                <div class="hacker-container p-6 rounded-lg space-y-4">
+                    <div>
+                        <p class="text-gray-400">// Run dorks to identify the target's technology stack...</p>
+                        <button id="identify-tech" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                            [ Identify Tech Stack ]
+                        </button>
+                        <div id="tech-results-container" class="hidden mt-4 pt-4 border-t border-fuchsia-500/50">
+                            <p id="tech-status" class="text-cyan-400 mb-4"></p>
+                            <div id="tech-results-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Test Endpoints & Errors -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Test Endpoints & Errors</h2>
-            <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:/proc/self/cwd'><span class="dork-text">LFI/Path Traversal</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+            <!-- AI-Powered Dork Builder -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> AI-Powered Dork Builder</h2>
+                <div class="hacker-container p-6 rounded-lg space-y-4">
+                    <div>
+                        <p class="text-gray-400">// Describe the vulnerability or file you're looking for...</p>
+                        <div>
+                            <label for="ai-prompt" class="block text-lg font-medium text-cyan-400 mb-2">Request:</label>
+                            <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 hacker-input rounded-md">
+                        </div>
+                        <button id="generate-ai-dork" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                            [ Generate Dork ]
+                        </button>
+                        <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">>> Generating dork...</p>
+                        <div id="ai-result-container" class="hidden mt-4">
+                            <label class="block text-lg font-medium text-cyan-400 mb-2">Generated Dork:</label>
+                            <div class="bg-black/50 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-cyan-400/50">
+                                <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
+                                <div class="flex flex-row gap-2 self-end sm:self-center">
+                                     <button id="copy-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm">Copy</button>
+                                     <button id="search-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm bg-cyan-600/50 border-cyan-600">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Basic Recon -->
+            <div>
+              <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Basic Recon Dorks</h2>
+              <div class="dork-grid">
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login | inurl:signin | intitle:"Login" | intitle:"Sign In"'><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+              </div>
+            </div>
+
+            <!-- Credentials & Sensitive Keys -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Credentials & Sensitive Keys</h2>
+                <div class="dork-grid">
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" ".ssh"'><span class="dork-text">Exposed SSH Dirs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:id_rsa -github'><span class="dork-text">Exposed SSH Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                </div>
+            </div>
+            
+            <!-- Backup Files -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Backups & Database Dumps</h2>
+                <div class="dork-grid">
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                </div>
+            </div>
+
+            <!-- Sensitive Files -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Sensitive Documents</h2>
+                <div class="dork-grid">
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                </div>
+            </div>
+
+            <!-- Vulnerable Files & Server Info -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Vulnerable Files & Server Info</h2>
+                <div class="dork-grid">
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"apache tomcat" "administration"'><span class="dork-text">Tomcat Admin</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" "ws_ftp.log"'><span class="dork-text">WS_FTP Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:log "inurl:wp-content"'><span class="dork-text">WordPress Debug Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                </div>
+            </div>
+
+            <!-- Test Endpoints & Errors -->
+            <div>
+                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Test Endpoints & Errors</h2>
+                <div class="dork-grid">
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:/proc/self/cwd'><span class="dork-text">LFI/Path Traversal</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                </div>
             </div>
         </div>
 
@@ -329,6 +493,72 @@
       const searchAiDorkBtn = document.getElementById('search-ai-dork');
       const aiLoadingMessage = document.getElementById('ai-loading-message');
 
+      // Profiler Elements
+      const initiateProfileBtn = document.getElementById('initiate-profile');
+      const profilerResultsContainer = document.getElementById('profiler-results-container');
+      const profilerStatus = document.getElementById('profiler-status');
+      const profilerResultsList = document.getElementById('profiler-results-list');
+      
+      // Visual Recon & Tech Stack Elements
+      const faviconPivotBtn = document.getElementById('favicon-pivot');
+      const identifyTechBtn = document.getElementById('identify-tech');
+      const techResultsContainer = document.getElementById('tech-results-container');
+      const techStatus = document.getElementById('tech-status');
+      const techResultsList = document.getElementById('tech-results-list');
+
+      // External Recon Elements
+      const externalGithubBtn = document.getElementById('external-github');
+      const externalPastebinBtn = document.getElementById('external-pastebin');
+      const externalVirusTotalBtn = document.getElementById('external-virustotal');
+      const externalSecurityTrailsBtn = document.getElementById('external-securitytrails');
+      const externalWaybackBtn = document.getElementById('external-wayback');
+      const externalCensysBtn = document.getElementById('external-censys');
+      const externalCrtshBtn = document.getElementById('external-crtsh');
+      const externalDnsdumpsterBtn = document.getElementById('external-dnsdumpster');
+      const externalHunterBtn = document.getElementById('external-hunter');
+      const externalPassiveTotalBtn = document.getElementById('external-passivetotal');
+      const externalLinkedinBtn = document.getElementById('external-linkedin');
+      const externalEmailRepBtn = document.getElementById('external-emailrep');
+      const externalUrlscanBtn = document.getElementById('external-urlscan');
+      const externalViewdnsBtn = document.getElementById('external-viewdns');
+      const externalWhoisBtn = document.getElementById('external-whois');
+      const externalLeakixBtn = document.getElementById('external-leakix');
+      const externalSearchcodeBtn = document.getElementById('external-searchcode');
+      const externalGrepappBtn = document.getElementById('external-grepapp');
+      const externalFofaBtn = document.getElementById('external-fofa');
+      const externalZoomeyeBtn = document.getElementById('external-zoomeye');
+      const externalNetlasBtn = document.getElementById('external-netlas');
+      const externalBuiltwithBtn = document.getElementById('external-builtwith');
+      const externalPublicwwwBtn = document.getElementById('external-publicwww');
+      const externalSpyonwebBtn = document.getElementById('external-spyonweb');
+      const externalGrayhatBtn = document.getElementById('external-grayhat');
+      const externalRapiddnsBtn = document.getElementById('external-rapiddns');
+      const externalPtrarchiveBtn = document.getElementById('external-ptrarchive');
+      const externalDnslyticsBtn = document.getElementById('external-dnslytics');
+      const externalDomainbigdataBtn = document.getElementById('external-domainbigdata');
+      const externalDehashedBtn = document.getElementById('external-dehashed');
+      const externalScyllaBtn = document.getElementById('external-scylla');
+      const externalHaveibeenpwnedBtn = document.getElementById('external-haveibeenpwned');
+      const externalCrunchbaseBtn = document.getElementById('external-crunchbase');
+      const externalApolloBtn = document.getElementById('external-apollo');
+      const externalGreynoiseBtn = document.getElementById('external-greynoise');
+      const externalQwantBtn = document.getElementById('external-qwant');
+      const externalYandexBtn = document.getElementById('external-yandex');
+      const externalNetcraftBtn = document.getElementById('external-netcraft');
+      const externalAhmiaBtn = document.getElementById('external-ahmia');
+      const externalDnsdbBtn = document.getElementById('external-dnsdb');
+      const externalSecurityHeadersBtn = document.getElementById('external-securityheaders');
+      const externalWhatsmynamewebBtn = document.getElementById('external-whatsmynameweb');
+      
+      // Dorking Modules Toggle
+      const toggleDorkingBtn = document.getElementById('toggle-dorking-modules');
+      const dorkingContainer = document.getElementById('dorking-modules-container');
+
+      // History Elements
+      const historyContainer = document.getElementById('history-container');
+      const clearHistoryBtn = document.getElementById('clear-history');
+      let history = JSON.parse(localStorage.getItem('nexusReconHistory')) || [];
+
       const handleMissingTarget = () => {
           errorMessage.textContent = 'ERROR: Target Domain or Company Name required.';
           errorMessage.classList.remove('hidden');
@@ -338,6 +568,57 @@
               targetDomainInput.classList.remove('shake-error');
           }, 820); // Duration of the shake animation
       };
+      
+      const addHistoryEntry = (action, target, note = '') => {
+          const timestamp = new Date();
+          const entry = {
+              id: timestamp.getTime(),
+              time: timestamp.toLocaleTimeString(),
+              action,
+              target,
+              note
+          };
+          history.unshift(entry);
+          if (history.length > 50) history.pop(); // Limit history size
+          localStorage.setItem('nexusReconHistory', JSON.stringify(history));
+          renderHistory();
+      };
+      
+      const renderHistory = () => {
+          historyContainer.innerHTML = '';
+          if (history.length === 0) {
+              historyContainer.innerHTML = '<p class="text-gray-500 italic">// No activity yet...</p>';
+              return;
+          }
+          history.forEach(entry => {
+              const entryEl = document.createElement('div');
+              entryEl.className = 'bg-black/30 p-3 rounded-md border border-fuchsia-500/30';
+              entryEl.innerHTML = `
+                  <div class="flex justify-between items-center">
+                      <p class="text-sm"><span class="text-gray-500">[${entry.time}]</span> Used <span class="text-fuchsia-400">${entry.action}</span> on <span class="text-cyan-400">${entry.target}</span></p>
+                  </div>
+                  <textarea class="note-input w-full mt-2 p-2 text-xs rounded-md bg-black/50 border-fuchsia-500/50" data-id="${entry.id}" placeholder="// Add notes...">${entry.note}</textarea>
+              `;
+              historyContainer.appendChild(entryEl);
+          });
+      };
+
+      historyContainer.addEventListener('change', (e) => {
+          if (e.target.classList.contains('note-input')) {
+              const entryId = Number(e.target.dataset.id);
+              const entry = history.find(item => item.id === entryId);
+              if (entry) {
+                  entry.note = e.target.value;
+                  localStorage.setItem('nexusReconHistory', JSON.stringify(history));
+              }
+          }
+      });
+
+      clearHistoryBtn.addEventListener('click', () => {
+          history = [];
+          localStorage.removeItem('nexusReconHistory');
+          renderHistory();
+      });
 
       const executeDork = (event) => {
         if (event.target.classList.contains('copy-btn')) return;
@@ -351,6 +632,7 @@
         const dorkTemplate = dorkButton.getAttribute('data-dork');
         if (dorkTemplate) {
           const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
+          addHistoryEntry(`Dork: ${dorkButton.textContent.trim()}`, domain);
           window.open(`https://www.google.com/search?q=${encodeURIComponent(finalDork)}`, '_blank');
         }
       };
@@ -383,14 +665,12 @@
       };
 
       dorkItems.forEach(item => {
-        // The main click listener is on the item itself for a larger click area
         item.addEventListener('click', executeDork);
         
-        // The copy button has its own listener to prevent the main one from firing
         const copyButton = item.querySelector('.copy-btn');
         if (copyButton) {
             copyButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Stop the event from bubbling up to the parent .dork-item
+                e.stopPropagation();
                 copyDork(copyButton);
             });
         }
@@ -402,7 +682,7 @@
         errorMessage.classList.add('hidden');
       });
 
-      const typeEffect = (element, text, speed = 50) => {
+      const typeEffect = (element, text, speed = 50, callback) => {
         element.textContent = "";
         let i = 0;
         const timer = setInterval(() => {
@@ -411,10 +691,183 @@
                 i++;
             } else {
                 clearInterval(timer);
+                if (callback) callback();
             }
         }, speed);
       };
 
+      // --- Automated Profiler Logic ---
+      const runProfiler = () => {
+          const target = targetDomainInput.value.trim();
+          if (!target) {
+              handleMissingTarget();
+              return;
+          }
+          addHistoryEntry('Automated Profiler', target);
+          errorMessage.classList.add('hidden');
+          profilerResultsContainer.classList.remove('hidden');
+          profilerResultsList.innerHTML = ''; // Clear previous results
+
+          const profilerDorks = [
+              { name: 'Subdomain Scan', dork: 'site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN' },
+              { name: 'Login Portals', dork: 'site:TARGET_DOMAIN inurl:login | inurl:signin' },
+              { name: 'Config Files', dork: 'site:TARGET_DOMAIN ext:xml | ext:conf | ext:ini | ext:log' },
+              { name: 'Public Cloud Buckets', dork: 'site:s3.amazonaws.com "TARGET_DOMAIN"' },
+              { name: 'Exposed Docs', dork: 'site:TARGET_DOMAIN ext:pdf | ext:docx "confidential"' }
+          ];
+
+          typeEffect(profilerStatus, `>> Profile for [${target}] complete:`, 30, () => {
+              profilerDorks.forEach((item, index) => {
+                  setTimeout(() => {
+                      const finalDork = item.dork.replace(/TARGET_DOMAIN/g, target);
+                      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                      
+                      const resultItem = document.createElement('div');
+                      resultItem.className = 'flex justify-between items-center';
+                      resultItem.innerHTML = `
+                          <span>- ${item.name}.......</span>
+                          <a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ View Results ]</a>
+                      `;
+                      profilerResultsList.appendChild(resultItem);
+                  }, index * 100); // Staggered appearance
+              });
+          });
+      };
+
+      initiateProfileBtn.addEventListener('click', runProfiler);
+      
+      // --- Favicon Pivot Logic ---
+      faviconPivotBtn.addEventListener('click', () => {
+          const target = targetDomainInput.value.trim();
+          if (!target) {
+              handleMissingTarget();
+              return;
+          }
+          addHistoryEntry('Favicon Pivot', target);
+          const shodanDork = `http.html:"${target}"`;
+          const shodanUrl = `https://www.shodan.io/search?query=${encodeURIComponent(shodanDork)}`;
+          window.open(shodanUrl, '_blank');
+      });
+
+      // --- Tech Stack Identifier Logic ---
+      const identifyTechStack = () => {
+          const target = targetDomainInput.value.trim();
+          if (!target) {
+              handleMissingTarget();
+              return;
+          }
+          addHistoryEntry('Tech-Stack Identifier', target);
+          techResultsContainer.classList.remove('hidden');
+          techResultsList.innerHTML = '';
+
+          const techDorks = [
+              { name: 'WordPress', dork: 'site:TARGET_DOMAIN inurl:wp-content | inurl:wp-admin' },
+              { name: 'Joomla', dork: 'site:TARGET_DOMAIN intext:"Powered by Joomla"' },
+              { name: 'Drupal', dork: 'site:TARGET_DOMAIN intext:"Powered by Drupal"' },
+              { name: 'Shopify', dork: 'site:TARGET_DOMAIN inurl:myshopify.com' },
+              { name: 'Apache Struts', dork: 'site:TARGET_DOMAIN filetype:action | filetype:do' },
+              { name: 'Adobe AEM', dork: 'site:TARGET_DOMAIN inurl:/content/dam' }
+          ];
+
+          typeEffect(techStatus, `>> Tech stack scan for [${target}] complete:`, 30, () => {
+              techDorks.forEach((tech, index) => {
+                  setTimeout(() => {
+                      const finalDork = tech.dork.replace(/TARGET_DOMAIN/g, target);
+                      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                      
+                      const resultItem = document.createElement('div');
+                      resultItem.className = 'flex justify-between items-center';
+                      resultItem.innerHTML = `
+                          <span>- ${tech.name}.......</span>
+                          <a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ Check ]</a>
+                      `;
+                      techResultsList.appendChild(resultItem);
+                  }, index * 100);
+              });
+          });
+      };
+      
+      identifyTechBtn.addEventListener('click', identifyTechStack);
+
+      // --- External Recon Logic ---
+      const openExternalTool = (urlTemplate, toolName) => {
+        const target = targetDomainInput.value.trim();
+        if(!target) {
+          handleMissingTarget();
+          return;
+        }
+        addHistoryEntry(toolName, target);
+        let query = target;
+        // Special handling for FOFA which requires base64
+        if (urlTemplate.includes('FOFA_B64_QUERY')) {
+            query = btoa(`domain="${target}"`);
+            urlTemplate = urlTemplate.replace('FOFA_B64_QUERY', query);
+        } else {
+            urlTemplate = urlTemplate.replace('TARGET_QUERY', encodeURIComponent(query));
+        }
+        window.open(urlTemplate, '_blank');
+      };
+
+      externalGithubBtn.addEventListener('click', () => openExternalTool('https://github.com/search?q="TARGET_QUERY"&type=code', 'GitHub Search'));
+      externalPastebinBtn.addEventListener('click', () => openExternalTool('https://www.google.com/search?q=site:pastebin.com "TARGET_QUERY"', 'Pastebin Search'));
+      externalVirusTotalBtn.addEventListener('click', () => openExternalTool('https://www.virustotal.com/gui/domain/TARGET_QUERY', 'VirusTotal'));
+      externalSecurityTrailsBtn.addEventListener('click', () => openExternalTool('https://securitytrails.com/domain/TARGET_QUERY/dns', 'SecurityTrails'));
+      externalWaybackBtn.addEventListener('click', () => openExternalTool('https://web.archive.org/web/*/TARGET_QUERY', 'Waybackurls'));
+      externalCensysBtn.addEventListener('click', () => openExternalTool('https://search.censys.io/search?resource=hosts&q=TARGET_QUERY', 'Censys'));
+      externalCrtshBtn.addEventListener('click', () => openExternalTool('https://crt.sh/?q=TARGET_QUERY', 'crt.sh'));
+      externalDnsdumpsterBtn.addEventListener('click', () => openExternalTool('https://dnsdumpster.com/', 'DNSdumpster'));
+      externalHunterBtn.addEventListener('click', () => openExternalTool('https://hunter.io/search?domain=TARGET_QUERY', 'Hunter.io'));
+      externalPassiveTotalBtn.addEventListener('click', () => openExternalTool('https://community.riskiq.com/search/TARGET_QUERY', 'PassiveTotal'));
+      externalLinkedinBtn.addEventListener('click', () => openExternalTool('https://www.google.com/search?q=site:linkedin.com/in "TARGET_QUERY"', 'LinkedIn Search'));
+      externalEmailRepBtn.addEventListener('click', () => window.open('https://emailrep.io/', '_blank'));
+      externalUrlscanBtn.addEventListener('click', () => openExternalTool('https://urlscan.io/search/#TARGET_QUERY', 'urlscan.io'));
+      externalViewdnsBtn.addEventListener('click', () => openExternalTool('https://viewdns.info/whois/?domain=TARGET_QUERY', 'ViewDNS.info'));
+      externalWhoisBtn.addEventListener('click', () => openExternalTool('https://who.is/whois/TARGET_QUERY', 'who.is'));
+      externalLeakixBtn.addEventListener('click', () => openExternalTool('https://leakix.net/search?q=TARGET_QUERY', 'LeakIX'));
+      externalSearchcodeBtn.addEventListener('click', () => openExternalTool('https://searchcode.com/?q=TARGET_QUERY', 'Searchcode'));
+      externalGrepappBtn.addEventListener('click', () => openExternalTool('https://grep.app/?q=TARGET_QUERY', 'Grep.app'));
+      externalFofaBtn.addEventListener('click', () => openExternalTool('https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', 'FOFA'));
+      externalZoomeyeBtn.addEventListener('click', () => openExternalTool('https://www.zoomeye.org/searchResult?q=TARGET_QUERY', 'ZoomEye'));
+      externalNetlasBtn.addEventListener('click', () => openExternalTool('https://app.netlas.io/host/?q=TARGET_QUERY', 'Netlas.io'));
+      externalBuiltwithBtn.addEventListener('click', () => openExternalTool('https://builtwith.com/?TARGET_QUERY', 'BuiltWith'));
+      externalPublicwwwBtn.addEventListener('click', () => openExternalTool('https://publicwww.com/websites/%22TARGET_QUERY%22/', 'PublicWWW'));
+      externalSpyonwebBtn.addEventListener('click', () => openExternalTool('http://spyonweb.com/TARGET_QUERY', 'SpyOnWeb'));
+      externalGrayhatBtn.addEventListener('click', () => window.open('https://buckets.grayhatwarfare.com/', '_blank'));
+      externalRapiddnsBtn.addEventListener('click', () => openExternalTool('https://rapiddns.io/subdomain/TARGET_QUERY', 'RapidDNS'));
+      externalPtrarchiveBtn.addEventListener('click', () => openExternalTool('http://ptrarchive.com/tools/search.htm?label=TARGET_QUERY', 'PTR Archive'));
+      externalDnslyticsBtn.addEventListener('click', () => openExternalTool('https://dnslytics.com/domain/TARGET_QUERY', 'DNSlytics'));
+      externalDomainbigdataBtn.addEventListener('click', () => openExternalTool('https://domainbigdata.com/TARGET_QUERY', 'DomainBigData'));
+      externalDehashedBtn.addEventListener('click', () => openExternalTool('https://www.dehashed.com/search?query=domain%3ATARGET_QUERY', 'Dehashed'));
+      externalScyllaBtn.addEventListener('click', () => window.open('https://scylla.sh/search', '_blank'));
+      externalHaveibeenpwnedBtn.addEventListener('click', () => window.open('https://haveibeenpwned.com/', '_blank'));
+      externalCrunchbaseBtn.addEventListener('click', () => openExternalTool('https://www.crunchbase.com/textsearch?q=TARGET_QUERY', 'Crunchbase'));
+      externalApolloBtn.addEventListener('click', () => openExternalTool('https://www.apollo.io/search/companies?q=TARGET_QUERY', 'Apollo.io'));
+      externalGreynoiseBtn.addEventListener('click', () => openExternalTool('https://viz.greynoise.io/query?gnql=TARGET_QUERY', 'GreyNoise'));
+      externalQwantBtn.addEventListener('click', () => openExternalTool('https://www.qwant.com/?q=TARGET_QUERY&t=web', 'Qwant'));
+      externalYandexBtn.addEventListener('click', () => openExternalTool('https://yandex.com/search/?text=TARGET_QUERY', 'Yandex'));
+      externalNetcraftBtn.addEventListener('click', () => openExternalTool('https://search.netcraft.com/?q=TARGET_QUERY', 'Netcraft'));
+      externalAhmiaBtn.addEventListener('click', () => openExternalTool('https://ahmia.fi/search/?q=TARGET_QUERY', 'Ahmia.fi'));
+      externalDnsdbBtn.addEventListener('click', () => openExternalTool('https://dnsdb.io/', 'DNSDB'));
+      externalSecurityHeadersBtn.addEventListener('click', () => openExternalTool('https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', 'SecurityHeaders.io'));
+      externalWhatsmynamewebBtn.addEventListener('click', () => openExternalTool('https://whatsmyname.app/?q=TARGET_QUERY', 'WhatsMyName'));
+
+      // --- Dorking Modules Toggle Logic ---
+      toggleDorkingBtn.addEventListener('click', () => {
+          const wasHidden = dorkingContainer.classList.contains('hidden');
+          dorkingContainer.classList.toggle('hidden');
+          
+          if (wasHidden) {
+              toggleDorkingBtn.textContent = '[ Hide Google Dorking Modules ]';
+              // Scroll to the container after a tiny delay to ensure it's rendered
+              setTimeout(() => {
+                  dorkingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100); 
+          } else {
+              toggleDorkingBtn.textContent = '[ Show Google Dorking Modules ]';
+          }
+      });
+
+      // --- Gemini AI Dork Generation Logic ---
       const generateAiDork = async () => {
           const domain = targetDomainInput.value.trim();
           const userRequest = aiPromptInput.value.trim();
@@ -472,6 +925,7 @@ Generate the Google Dork:`;
                       typeEffect(aiDorkOutput, generatedDork, 30);
                       generateAiDorkBtn.disabled = false;
                       aiLoadingMessage.classList.add('hidden');
+                      addHistoryEntry('AI Dork Generation', domain, `Request: ${userRequest}`);
                       return; 
                   } else {
                       throw new Error('Invalid response structure from API.');
@@ -518,6 +972,9 @@ Generate the Google Dork:`;
               window.open(`https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`, '_blank');
           }
       });
+      
+      // Initial render of history on load
+      renderHistory();
     });
   </script>
 
