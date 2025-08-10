@@ -21,16 +21,16 @@
       overflow-x: hidden;
       /* Cyberpunk grid background */
       background-image: 
-        linear-gradient(to right, rgba(0, 221, 255, 0.15) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 221, 255, 0.15) 1px, transparent 1px);
+        linear-gradient(to right, rgba(0, 221, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 221, 255, 0.1) 1px, transparent 1px);
       background-size: 40px 40px;
-      animation: grid-pan 60s linear infinite;
+      animation: grid-pan 120s linear infinite; /* Made animation slower */
     }
 
     .hacker-container {
         position: relative;
         border: 1px solid #ff00c1; /* Magenta */
-        box-shadow: 0 0 15px rgba(255, 0, 193, 0.4), inset 0 0 10px rgba(255, 0, 193, 0.2);
+        box-shadow: 0 0 15px rgba(255, 0, 193, 0.3), inset 0 0 10px rgba(255, 0, 193, 0.15);
         background-color: rgba(10, 10, 26, 0.85);
         backdrop-filter: blur(8px);
     }
@@ -44,6 +44,11 @@
         height: 20px;
         border-color: #00ffdd; /* Bright Cyan */
         border-style: solid;
+        transition: all 0.3s ease;
+    }
+    .hacker-container:hover::before, .hacker-container:hover::after,
+    .hacker-container:hover > :first-child::before, .hacker-container:hover > :first-child::after {
+        border-color: #ff00c1;
     }
     .hacker-container::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
     .hacker-container::after { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
@@ -52,12 +57,17 @@
 
 
     .glitch {
-      font-size: 3rem;
+      font-size: 2.5rem; /* Slightly smaller on mobile */
       font-weight: 700;
       position: relative;
       color: #00ffdd;
       text-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
       animation: glitch-animation 5s infinite linear alternate-reverse;
+    }
+    @media (min-width: 768px) {
+      .glitch {
+        font-size: 3rem;
+      }
     }
 
     .glitch::before,
@@ -88,16 +98,20 @@
     @keyframes glitch-before { 0% { clip-path: inset(0 0 100% 0); } 100% { clip-path: inset(90% 0 3% 0); } }
     @keyframes glitch-after { 0% { clip-path: inset(100% 0 0 0); } 100% { clip-path: inset(3% 0 90% 0); } }
 
-    .hacker-input, .note-input {
+    .hacker-input, .note-input, .workspace-textarea, .hacker-select {
         background-color: rgba(0, 221, 255, 0.05);
         border: 1px solid #00ffdd;
         color: #00ffdd;
         transition: all 0.3s ease;
     }
-    .hacker-input:focus, .note-input:focus {
+    .hacker-input:focus, .note-input:focus, .workspace-textarea:focus, .hacker-select:focus {
         outline: none;
         box-shadow: 0 0 10px #00ffdd;
         background-color: rgba(0, 221, 255, 0.1);
+    }
+    .hacker-select option {
+        background-color: #0a0a1a;
+        color: #00ffdd;
     }
 
     .hacker-btn {
@@ -108,6 +122,7 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      will-change: transform; /* Performance hint for browser */
     }
     .hacker-btn::before {
         content: '';
@@ -131,18 +146,12 @@
     .category-title {
         color: #ff00c1;
         text-shadow: 0 0 8px #ff00c1;
-        animation: pulse-animation 2s infinite;
+        /* Replaced pulse with a more subtle glow for performance */
     }
     
     .subcategory-title {
         color: #00ffdd;
         text-shadow: 0 0 5px #00ffdd;
-    }
-
-    @keyframes pulse-animation {
-        0% { opacity: 0.8; }
-        50% { opacity: 1; }
-        100% { opacity: 0.8; }
     }
 
     .dork-item {
@@ -161,7 +170,7 @@
     }
     .dork-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Adjusted for better responsiveness */
         gap: 1rem;
     }
     
@@ -174,6 +183,18 @@
 
     .shake-error {
       animation: shake-error-animation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    .tab-btn {
+        background-color: transparent;
+        border: 1px solid #00ffdd;
+        color: #00ffdd;
+        transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+        background-color: #00ffdd;
+        color: #0a0a1a;
+        box-shadow: 0 0 15px #00ffdd;
     }
   </style>
 </head>
@@ -189,10 +210,14 @@
       <!-- Target Input Section -->
       <div class="mb-12 hacker-container p-6 rounded-lg">
         <div> <!-- This extra div is for the corner brackets -->
-            <label for="targetDomain" class="block text-lg font-medium text-cyan-400 mb-2">// Enter Target:</label>
+            <label class="block text-lg font-medium text-cyan-400 mb-2">// Select Recon Mode & Enter Target:</label>
+            <div id="recon-mode-tabs" class="flex flex-wrap gap-2 mb-4">
+                <button class="tab-btn active py-2 px-4 rounded-md" data-mode="website">Website Recon</button>
+                <button class="tab-btn py-2 px-4 rounded-md" data-mode="user">User Recon</button>
+            </div>
             <div class="flex flex-col sm:flex-row gap-4">
-              <input type="text" id="targetDomain" placeholder="Domain, Company, or Username" class="w-full px-4 py-3 hacker-input rounded-md" />
-              <button id="clearDomain" class="bg-red-600/50 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md hacker-btn border-red-500">Clear</button>
+              <input type="text" id="target-input" placeholder="Enter Domain or Company..." class="w-full px-4 py-3 hacker-input rounded-md" />
+              <button id="clear-target" class="bg-red-600/50 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md hacker-btn border-red-500">Clear</button>
             </div>
             <p id="error-message" class="text-red-400 mt-2 hidden"></p>
         </div>
@@ -201,9 +226,57 @@
       <!-- Recon Modules -->
       <div class="space-y-10">
 
-        <!-- NEW: Session History & Notes -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History & Notes</h2>
+        <!-- Live CTI & Vulnerability Feed -->
+        <div data-recon-type="all">
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Live CTI & Vulnerability Feed</h2>
+            <div class="hacker-container p-6 rounded-lg space-y-4">
+                <div>
+                    <p class="text-gray-400 mb-4">// Latest threat intelligence. Feed is static and requires a backend to be live.</p>
+                    <div id="cti-feed" class="max-h-96 overflow-y-auto space-y-3 pr-2">
+                        <!-- CTI entries will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investigation Workspace -->
+        <div data-recon-type="all">
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
+            <div class="hacker-container p-6 rounded-lg space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-gray-400">// Notes are saved per-target in your browser...</p>
+                        <button id="clear-workspace" class="hacker-btn text-sm p-2 border-red-500 text-red-400">[ Clear Workspace for this Target ]</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="workspace-subdomains" class="block text-cyan-400 mb-2">Subdomains:</label>
+                            <textarea id="workspace-subdomains" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com&#10;dev.example.com"></textarea>
+                        </div>
+                        <div>
+                            <label for="workspace-emails" class="block text-cyan-400 mb-2">Email Addresses:</label>
+                            <textarea id="workspace-emails" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="admin@example.com"></textarea>
+                        </div>
+                        <div>
+                            <label for="workspace-ips" class="block text-cyan-400 mb-2">IP Addresses:</label>
+                            <textarea id="workspace-ips" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="192.168.1.1"></textarea>
+                        </div>
+                        <div>
+                            <label for="workspace-urls" class="block text-cyan-400 mb-2">Interesting URLs:</label>
+                            <textarea id="workspace-urls" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com/login.php"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                             <label for="workspace-notes" class="block text-cyan-400 mb-2">General Notes:</label>
+                             <textarea id="workspace-notes" rows="6" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="Found potential vulnerability in..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session History -->
+        <div data-recon-type="all">
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History</h2>
             <div class="hacker-container p-6 rounded-lg space-y-4">
                 <div>
                     <div class="flex justify-between items-center">
@@ -217,107 +290,16 @@
             </div>
         </div>
 
-        <!-- External Reconnaissance -->
-        <div>
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> OSINT & External Tools</h2>
-            <div class="hacker-container p-6 rounded-lg space-y-6">
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Infrastructure & Network Intel</h3>
-                    <div class="dork-grid">
-                        <button id="external-virustotal" class="hacker-btn p-3">[ VirusTotal ]</button>
-                        <button id="external-censys" class="hacker-btn p-3">[ Censys ]</button>
-                        <button id="external-shodan" class="hacker-btn p-3">[ Shodan ]</button>
-                        <button id="external-netlas" class="hacker-btn p-3">[ Netlas.io ]</button>
-                        <button id="external-fofa" class="hacker-btn p-3">[ FOFA.so ]</button>
-                        <button id="external-zoomeye" class="hacker-btn p-3">[ ZoomEye ]</button>
-                        <button id="external-securityheaders" class="hacker-btn p-3">[ SecurityHeaders.io ]</button>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// DNS, IP, & Subdomain Enumeration</h3>
-                    <div class="dork-grid">
-                        <button id="external-securitytrails" class="hacker-btn p-3">[ SecurityTrails ]</button>
-                        <button id="external-crtsh" class="hacker-btn p-3">[ crt.sh ]</button>
-                        <button id="external-dnsdumpster" class="hacker-btn p-3">[ DNSdumpster ]</button>
-                        <button id="external-passivetotal" class="hacker-btn p-3">[ PassiveTotal ]</button>
-                        <button id="external-viewdns" class="hacker-btn p-3">[ ViewDNS.info ]</button>
-                        <button id="external-whois" class="hacker-btn p-3">[ who.is ]</button>
-                        <button id="external-rapiddns" class="hacker-btn p-3">[ RapidDNS ]</button>
-                        <button id="external-ptrarchive" class="hacker-btn p-3">[ PTR Archive ]</button>
-                        <button id="external-dnslytics" class="hacker-btn p-3">[ DNSlytics ]</button>
-                        <button id="external-domainbigdata" class="hacker-btn p-3">[ DomainBigData ]</button>
-                        <button id="external-dnsdb" class="hacker-btn p-3">[ DNSDB ]</button>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Secrets, Code, & Leak Analysis</h3>
-                    <div class="dork-grid">
-                        <button id="external-github" class="hacker-btn p-3">[ GitHub ]</button>
-                        <button id="external-pastebin" class="hacker-btn p-3">[ Pastebin ]</button>
-                        <button id="external-leakix" class="hacker-btn p-3">[ LeakIX ]</button>
-                        <button id="external-grepapp" class="hacker-btn p-3">[ Grep.app ]</button>
-                        <button id="external-searchcode" class="hacker-btn p-3">[ Searchcode ]</button>
-                        <button id="external-grayhat" class="hacker-btn p-3">[ Grayhat Warfare ]</button>
-                        <button id="external-dehashed" class="hacker-btn p-3">[ Dehashed ]</button>
-                        <button id="external-scylla" class="hacker-btn p-3">[ Scylla.sh ]</button>
-                        <button id="external-haveibeenpwned" class="hacker-btn p-3">[ HaveIBeenPwned ]</button>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Archived Content & Web Analysis</h3>
-                    <div class="dork-grid">
-                        <button id="external-wayback" class="hacker-btn p-3">[ Waybackurls ]</button>
-                        <button id="external-urlscan" class="hacker-btn p-3">[ urlscan.io ]</button>
-                        <button id="external-builtwith" class="hacker-btn p-3">[ BuiltWith ]</button>
-                        <button id="external-publicwww" class="hacker-btn p-3">[ PublicWWW ]</button>
-                        <button id="external-spyonweb" class="hacker-btn p-3">[ SpyOnWeb ]</button>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Company, Email, & Employee Intel</h3>
-                    <div class="dork-grid">
-                        <button id="external-hunter" class="hacker-btn p-3">[ Hunter.io ]</button>
-                        <button id="external-emailrep" class="hacker-btn p-3">[ EmailRep.io ]</button>
-                        <button id="external-linkedin" class="hacker-btn p-3">[ LinkedIn Search ]</button>
-                        <button id="external-crunchbase" class="hacker-btn p-3">[ Crunchbase ]</button>
-                        <button id="external-apollo" class="hacker-btn p-3">[ Apollo.io ]</button>
-                        <button id="external-greynoise" class="hacker-btn p-3">[ GreyNoise ]</button>
-                        <button id="external-whatsmynameweb" class="hacker-btn p-3">[ WhatsMyName ]</button>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="subcategory-title text-xl font-semibold mb-4">// Alternative Search Engines</h3>
-                    <div class="dork-grid">
-                        <button id="external-qwant" class="hacker-btn p-3">[ Qwant ]</button>
-                        <button id="external-yandex" class="hacker-btn p-3">[ Yandex ]</button>
-                        <button id="external-netcraft" class="hacker-btn p-3">[ Netcraft ]</button>
-                        <button id="external-ahmia" class="hacker-btn p-3">[ Ahmia.fi (TOR) ]</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Google Dorking Toggle -->
-        <div>
-            <div class="hacker-container p-6 rounded-lg">
-                <div>
-                    <button id="toggle-dorking-modules" class="w-full hacker-btn p-3 font-bold text-xl">
-                        [ Show Google Dorking Modules ]
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Collapsible Dorking Modules Container -->
-        <div id="dorking-modules-container" class="hidden space-y-10">
-      
-            <!-- Automated Target Profiler -->
-            <div>
-                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Automated Target Profiler</h2>
+        <!-- Automated Recon Workflows -->
+        <div data-recon-type="website">
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Automated Recon Workflows</h2>
+            <div class="space-y-10">
+                <!-- Automated Target Profiler -->
                 <div class="hacker-container p-6 rounded-lg space-y-4">
                     <div>
-                        <p class="text-gray-400">// Run a sequence of essential dorks against the target...</p>
-                        <button id="initiate-profile" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                        <h3 class="subcategory-title text-xl font-semibold mb-2">// Automated Target Profiler</h3>
+                        <p class="text-gray-400 mb-4">// Run a sequence of essential dorks against the target...</p>
+                        <button id="initiate-profile" class="w-full hacker-btn font-bold py-3 px-6 rounded-md">
                             [ Initiate Target Profile ]
                         </button>
                         <div id="profiler-results-container" class="hidden mt-4 pt-4 border-t border-fuchsia-500/50">
@@ -326,8 +308,95 @@
                         </div>
                     </div>
                 </div>
+                <!-- Target Tech-Stack Identifier -->
+                <div class="hacker-container p-6 rounded-lg space-y-4">
+                    <div>
+                        <h3 class="subcategory-title text-xl font-semibold mb-2">// Target Tech-Stack Identifier</h3>
+                        <p class="text-gray-400 mb-4">// Run dorks to identify the target's technology stack...</p>
+                        <button id="identify-tech" class="w-full hacker-btn font-bold py-3 px-6 rounded-md">
+                            [ Identify Tech Stack ]
+                        </button>
+                        <div id="tech-results-container" class="hidden mt-4 pt-4 border-t border-fuchsia-500/50">
+                            <p id="tech-status" class="text-cyan-400 mb-4"></p>
+                            <div id="tech-results-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
+        <!-- Manual Investigation Modules -->
+        <div>
+            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Manual Investigation Modules</h2>
+            <div class="space-y-10">
+                <!-- External Reconnaissance -->
+                <div class="hacker-container p-6 rounded-lg space-y-6">
+                    <div>
+                        <h3 class="subcategory-title text-xl font-semibold mb-4">// OSINT & External Tools</h3>
+                        <div class="dork-grid">
+                            <button id="external-virustotal" class="hacker-btn p-3" data-recon-type="website">[ VirusTotal ]</button>
+                            <button id="external-censys" class="hacker-btn p-3" data-recon-type="website">[ Censys ]</button>
+                            <button id="external-shodan" class="hacker-btn p-3" data-recon-type="website">[ Shodan ]</button>
+                            <button id="external-netlas" class="hacker-btn p-3" data-recon-type="website">[ Netlas.io ]</button>
+                            <button id="external-fofa" class="hacker-btn p-3" data-recon-type="website">[ FOFA.so ]</button>
+                            <button id="external-zoomeye" class="hacker-btn p-3" data-recon-type="website">[ ZoomEye ]</button>
+                            <button id="external-securityheaders" class="hacker-btn p-3" data-recon-type="website">[ SecurityHeaders.io ]</button>
+                            <button id="external-securitytrails" class="hacker-btn p-3" data-recon-type="website">[ SecurityTrails ]</button>
+                            <button id="external-crtsh" class="hacker-btn p-3" data-recon-type="website">[ crt.sh ]</button>
+                            <button id="external-dnsdumpster" class="hacker-btn p-3" data-recon-type="website">[ DNSdumpster ]</button>
+                            <button id="external-passivetotal" class="hacker-btn p-3" data-recon-type="website">[ PassiveTotal ]</button>
+                            <button id="external-viewdns" class="hacker-btn p-3" data-recon-type="website">[ ViewDNS.info ]</button>
+                            <button id="external-whois" class="hacker-btn p-3" data-recon-type="website">[ who.is ]</button>
+                            <button id="external-rapiddns" class="hacker-btn p-3" data-recon-type="website">[ RapidDNS ]</button>
+                            <button id="external-ptrarchive" class="hacker-btn p-3" data-recon-type="website">[ PTR Archive ]</button>
+                            <button id="external-dnslytics" class="hacker-btn p-3" data-recon-type="website">[ DNSlytics ]</button>
+                            <button id="external-domainbigdata" class="hacker-btn p-3" data-recon-type="website">[ DomainBigData ]</button>
+                            <button id="external-dnsdb" class="hacker-btn p-3" data-recon-type="website">[ DNSDB ]</button>
+                            <button id="external-github" class="hacker-btn p-3" data-recon-type="all">[ GitHub ]</button>
+                            <button id="external-pastebin" class="hacker-btn p-3" data-recon-type="all">[ Pastebin ]</button>
+                            <button id="external-leakix" class="hacker-btn p-3" data-recon-type="website">[ LeakIX ]</button>
+                            <button id="external-grepapp" class="hacker-btn p-3" data-recon-type="all">[ Grep.app ]</button>
+                            <button id="external-searchcode" class="hacker-btn p-3" data-recon-type="all">[ Searchcode ]</button>
+                            <button id="external-grayhat" class="hacker-btn p-3" data-recon-type="website">[ Grayhat Warfare ]</button>
+                            <button id="external-dehashed" class="hacker-btn p-3" data-recon-type="all">[ Dehashed ]</button>
+                            <button id="external-scylla" class="hacker-btn p-3" data-recon-type="all">[ Scylla.sh ]</button>
+                            <button id="external-haveibeenpwned" class="hacker-btn p-3" data-recon-type="all">[ HaveIBeenPwned ]</button>
+                            <button id="external-wayback" class="hacker-btn p-3" data-recon-type="website">[ Waybackurls ]</button>
+                            <button id="external-urlscan" class="hacker-btn p-3" data-recon-type="website">[ urlscan.io ]</button>
+                            <button id="external-builtwith" class="hacker-btn p-3" data-recon-type="website">[ BuiltWith ]</button>
+                            <button id="external-publicwww" class="hacker-btn p-3" data-recon-type="website">[ PublicWWW ]</button>
+                            <button id="external-spyonweb" class="hacker-btn p-3" data-recon-type="website">[ SpyOnWeb ]</button>
+                            <button id="external-hunter" class="hacker-btn p-3" data-recon-type="website">[ Hunter.io ]</button>
+                            <button id="external-emailrep" class="hacker-btn p-3" data-recon-type="all">[ EmailRep.io ]</button>
+                            <button id="external-linkedin" class="hacker-btn p-3" data-recon-type="all">[ LinkedIn Search ]</button>
+                            <button id="external-crunchbase" class="hacker-btn p-3" data-recon-type="all">[ Crunchbase ]</button>
+                            <button id="external-apollo" class="hacker-btn p-3" data-recon-type="all">[ Apollo.io ]</button>
+                            <button id="external-greynoise" class="hacker-btn p-3" data-recon-type="website">[ GreyNoise ]</button>
+                            <button id="external-whatsmynameweb" class="hacker-btn p-3" data-recon-type="user">[ WhatsMyName ]</button>
+                            <button id="external-truecaller" class="hacker-btn p-3" data-recon-type="user">[ Truecaller ]</button>
+                            <button id="external-syncme" class="hacker-btn p-3" data-recon-type="user">[ Sync.me ]</button>
+                            <button id="external-qwant" class="hacker-btn p-3" data-recon-type="all">[ Qwant ]</button>
+                            <button id="external-yandex" class="hacker-btn p-3" data-recon-type="all">[ Yandex ]</button>
+                            <button id="external-netcraft" class="hacker-btn p-3" data-recon-type="website">[ Netcraft ]</button>
+                            <button id="external-ahmia" class="hacker-btn p-3" data-recon-type="all">[ Ahmia.fi (TOR) ]</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Dorking Toggle -->
+                <div class="hacker-container p-6 rounded-lg" data-recon-type="website">
+                    <div>
+                        <button id="toggle-dorking-modules" class="w-full hacker-btn p-3 font-bold text-xl">
+                            [ Show Google Dorking Modules ]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Collapsible Dorking Modules Container -->
+        <div id="dorking-modules-container" class="hidden space-y-10" data-recon-type="website">
+      
             <!-- Visual Reconnaissance -->
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Visual Recon (Favicon Pivoting)</h2>
@@ -338,23 +407,6 @@
                             [ Find by Favicon Hash (Shodan) ]
                         </button>
                         <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:&lt;hash&gt;`.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Target Tech-Stack Identifier -->
-            <div>
-                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Target Tech-Stack Identifier</h2>
-                <div class="hacker-container p-6 rounded-lg space-y-4">
-                    <div>
-                        <p class="text-gray-400">// Run dorks to identify the target's technology stack...</p>
-                        <button id="identify-tech" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
-                            [ Identify Tech Stack ]
-                        </button>
-                        <div id="tech-results-container" class="hidden mt-4 pt-4 border-t border-fuchsia-500/50">
-                            <p id="tech-status" class="text-cyan-400 mb-4"></p>
-                            <div id="tech-results-list" class="space-y-2"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -480,10 +532,13 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const targetDomainInput = document.getElementById('targetDomain');
+      const targetInput = document.getElementById('target-input');
       const errorMessage = document.getElementById('error-message');
       const dorkItems = document.querySelectorAll('.dork-item');
-      const clearButton = document.getElementById('clearDomain');
+      const clearButton = document.getElementById('clear-target');
+      
+      const reconModeTabs = document.querySelectorAll('#recon-mode-tabs .tab-btn');
+      const reconModules = document.querySelectorAll('[data-recon-type]');
 
       const generateAiDorkBtn = document.getElementById('generate-ai-dork');
       const aiPromptInput = document.getElementById('ai-prompt');
@@ -507,48 +562,52 @@
       const techResultsList = document.getElementById('tech-results-list');
 
       // External Recon Elements
-      const externalGithubBtn = document.getElementById('external-github');
-      const externalPastebinBtn = document.getElementById('external-pastebin');
-      const externalVirusTotalBtn = document.getElementById('external-virustotal');
-      const externalSecurityTrailsBtn = document.getElementById('external-securitytrails');
-      const externalWaybackBtn = document.getElementById('external-wayback');
-      const externalCensysBtn = document.getElementById('external-censys');
-      const externalCrtshBtn = document.getElementById('external-crtsh');
-      const externalDnsdumpsterBtn = document.getElementById('external-dnsdumpster');
-      const externalHunterBtn = document.getElementById('external-hunter');
-      const externalPassiveTotalBtn = document.getElementById('external-passivetotal');
-      const externalLinkedinBtn = document.getElementById('external-linkedin');
-      const externalEmailRepBtn = document.getElementById('external-emailrep');
-      const externalUrlscanBtn = document.getElementById('external-urlscan');
-      const externalViewdnsBtn = document.getElementById('external-viewdns');
-      const externalWhoisBtn = document.getElementById('external-whois');
-      const externalLeakixBtn = document.getElementById('external-leakix');
-      const externalSearchcodeBtn = document.getElementById('external-searchcode');
-      const externalGrepappBtn = document.getElementById('external-grepapp');
-      const externalFofaBtn = document.getElementById('external-fofa');
-      const externalZoomeyeBtn = document.getElementById('external-zoomeye');
-      const externalNetlasBtn = document.getElementById('external-netlas');
-      const externalBuiltwithBtn = document.getElementById('external-builtwith');
-      const externalPublicwwwBtn = document.getElementById('external-publicwww');
-      const externalSpyonwebBtn = document.getElementById('external-spyonweb');
-      const externalGrayhatBtn = document.getElementById('external-grayhat');
-      const externalRapiddnsBtn = document.getElementById('external-rapiddns');
-      const externalPtrarchiveBtn = document.getElementById('external-ptrarchive');
-      const externalDnslyticsBtn = document.getElementById('external-dnslytics');
-      const externalDomainbigdataBtn = document.getElementById('external-domainbigdata');
-      const externalDehashedBtn = document.getElementById('external-dehashed');
-      const externalScyllaBtn = document.getElementById('external-scylla');
-      const externalHaveibeenpwnedBtn = document.getElementById('external-haveibeenpwned');
-      const externalCrunchbaseBtn = document.getElementById('external-crunchbase');
-      const externalApolloBtn = document.getElementById('external-apollo');
-      const externalGreynoiseBtn = document.getElementById('external-greynoise');
-      const externalQwantBtn = document.getElementById('external-qwant');
-      const externalYandexBtn = document.getElementById('external-yandex');
-      const externalNetcraftBtn = document.getElementById('external-netcraft');
-      const externalAhmiaBtn = document.getElementById('external-ahmia');
-      const externalDnsdbBtn = document.getElementById('external-dnsdb');
-      const externalSecurityHeadersBtn = document.getElementById('external-securityheaders');
-      const externalWhatsmynamewebBtn = document.getElementById('external-whatsmynameweb');
+      const externalButtons = {
+        'external-github': { url: 'https://github.com/search?q="TARGET_QUERY"&type=code', name: 'GitHub Search' },
+        'external-pastebin': { url: 'https://www.google.com/search?q=site:pastebin.com "TARGET_QUERY"', name: 'Pastebin Search' },
+        'external-virustotal': { url: 'https://www.virustotal.com/gui/domain/TARGET_QUERY', name: 'VirusTotal' },
+        'external-securitytrails': { url: 'https://securitytrails.com/domain/TARGET_QUERY/dns', name: 'SecurityTrails' },
+        'external-wayback': { url: 'https://web.archive.org/web/*/TARGET_QUERY', name: 'Waybackurls' },
+        'external-censys': { url: 'https://search.censys.io/search?resource=hosts&q=TARGET_QUERY', name: 'Censys' },
+        'external-crtsh': { url: 'https://crt.sh/?q=TARGET_QUERY', name: 'crt.sh' },
+        'external-dnsdumpster': { url: 'https://dnsdumpster.com/', name: 'DNSdumpster' },
+        'external-hunter': { url: 'https://hunter.io/search?domain=TARGET_QUERY', name: 'Hunter.io' },
+        'external-passivetotal': { url: 'https://community.riskiq.com/search/TARGET_QUERY', name: 'PassiveTotal' },
+        'external-linkedin': { url: 'https://www.google.com/search?q=site:linkedin.com/in "TARGET_QUERY"', name: 'LinkedIn Search' },
+        'external-emailrep': { url: 'https://emailrep.io/', name: 'EmailRep.io' },
+        'external-urlscan': { url: 'https://urlscan.io/search/#TARGET_QUERY', name: 'urlscan.io' },
+        'external-viewdns': { url: 'https://viewdns.info/whois/?domain=TARGET_QUERY', name: 'ViewDNS.info' },
+        'external-whois': { url: 'https://who.is/whois/TARGET_QUERY', name: 'who.is' },
+        'external-leakix': { url: 'https://leakix.net/search?q=TARGET_QUERY', name: 'LeakIX' },
+        'external-searchcode': { url: 'https://searchcode.com/?q=TARGET_QUERY', name: 'Searchcode' },
+        'external-grepapp': { url: 'https://grep.app/?q=TARGET_QUERY', name: 'Grep.app' },
+        'external-fofa': { url: 'https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', name: 'FOFA' },
+        'external-zoomeye': { url: 'https://www.zoomeye.org/searchResult?q=TARGET_QUERY', name: 'ZoomEye' },
+        'external-netlas': { url: 'https://app.netlas.io/host/?q=TARGET_QUERY', name: 'Netlas.io' },
+        'external-builtwith': { url: 'https://builtwith.com/?TARGET_QUERY', name: 'BuiltWith' },
+        'external-publicwww': { url: 'https://publicwww.com/websites/%22TARGET_QUERY%22/', name: 'PublicWWW' },
+        'external-spyonweb': { url: 'http://spyonweb.com/TARGET_QUERY', name: 'SpyOnWeb' },
+        'external-grayhat': { url: 'https://buckets.grayhatwarfare.com/', name: 'Grayhat Warfare' },
+        'external-rapiddns': { url: 'https://rapiddns.io/subdomain/TARGET_QUERY', name: 'RapidDNS' },
+        'external-ptrarchive': { url: 'http://ptrarchive.com/tools/search.htm?label=TARGET_QUERY', name: 'PTR Archive' },
+        'external-dnslytics': { url: 'https://dnslytics.com/domain/TARGET_QUERY', name: 'DNSlytics' },
+        'external-domainbigdata': { url: 'https://domainbigdata.com/TARGET_QUERY', name: 'DomainBigData' },
+        'external-dehashed': { url: 'https://www.dehashed.com/search?query=domain%3ATARGET_QUERY', name: 'Dehashed' },
+        'external-scylla': { url: 'https://scylla.sh/search', name: 'Scylla.sh' },
+        'external-haveibeenpwned': { url: 'https://haveibeenpwned.com/', name: 'HaveIBeenPwned' },
+        'external-crunchbase': { url: 'https://www.crunchbase.com/textsearch?q=TARGET_QUERY', name: 'Crunchbase' },
+        'external-apollo': { url: 'https://www.apollo.io/search/companies?q=TARGET_QUERY', name: 'Apollo.io' },
+        'external-greynoise': { url: 'https://viz.greynoise.io/query?gnql=TARGET_QUERY', name: 'GreyNoise' },
+        'external-qwant': { url: 'https://www.qwant.com/?q=TARGET_QUERY&t=web', name: 'Qwant' },
+        'external-yandex': { url: 'https://yandex.com/search/?text=TARGET_QUERY', name: 'Yandex' },
+        'external-netcraft': { url: 'https://search.netcraft.com/?q=TARGET_QUERY', name: 'Netcraft' },
+        'external-ahmia': { url: 'https://ahmia.fi/search/?q=TARGET_QUERY', name: 'Ahmia.fi' },
+        'external-dnsdb': { url: 'https://dnsdb.io/', name: 'DNSDB' },
+        'external-securityheaders': { url: 'https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', name: 'SecurityHeaders.io' },
+        'external-whatsmynameweb': { url: 'https://whatsmyname.app/?q=TARGET_QUERY', name: 'WhatsMyName' },
+        'external-truecaller': { url: 'https://www.truecaller.com/search/in/TARGET_QUERY', name: 'Truecaller' },
+        'external-syncme': { url: 'https://sync.me/search/?number=TARGET_QUERY', name: 'Sync.me' }
+      };
       
       // Dorking Modules Toggle
       const toggleDorkingBtn = document.getElementById('toggle-dorking-modules');
@@ -558,14 +617,28 @@
       const historyContainer = document.getElementById('history-container');
       const clearHistoryBtn = document.getElementById('clear-history');
       let history = JSON.parse(localStorage.getItem('nexusReconHistory')) || [];
+      
+      // Workspace Elements
+      const workspaceSubdomains = document.getElementById('workspace-subdomains');
+      const workspaceEmails = document.getElementById('workspace-emails');
+      const workspaceIps = document.getElementById('workspace-ips');
+      const workspaceUrls = document.getElementById('workspace-urls');
+      const workspaceNotes = document.getElementById('workspace-notes');
+      const clearWorkspaceBtn = document.getElementById('clear-workspace');
+      const workspaceElements = [workspaceSubdomains, workspaceEmails, workspaceIps, workspaceUrls, workspaceNotes];
+
+      const getActiveTarget = () => {
+          return { value: targetInput.value.trim(), element: targetInput };
+      };
 
       const handleMissingTarget = () => {
-          errorMessage.textContent = 'ERROR: Target Domain or Company Name required.';
+          const { element } = getActiveTarget();
+          errorMessage.textContent = 'ERROR: Target required for this action.';
           errorMessage.classList.remove('hidden');
-          targetDomainInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          targetDomainInput.classList.add('shake-error');
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('shake-error');
           setTimeout(() => {
-              targetDomainInput.classList.remove('shake-error');
+              element.classList.remove('shake-error');
           }, 820); // Duration of the shake animation
       };
       
@@ -585,6 +658,7 @@
       };
       
       const renderHistory = () => {
+          if (!historyContainer) return;
           historyContainer.innerHTML = '';
           if (history.length === 0) {
               historyContainer.innerHTML = '<p class="text-gray-500 italic">// No activity yet...</p>';
@@ -603,26 +677,30 @@
           });
       };
 
-      historyContainer.addEventListener('change', (e) => {
-          if (e.target.classList.contains('note-input')) {
-              const entryId = Number(e.target.dataset.id);
-              const entry = history.find(item => item.id === entryId);
-              if (entry) {
-                  entry.note = e.target.value;
-                  localStorage.setItem('nexusReconHistory', JSON.stringify(history));
-              }
-          }
-      });
+      if (historyContainer) {
+        historyContainer.addEventListener('change', (e) => {
+            if (e.target.classList.contains('note-input')) {
+                const entryId = Number(e.target.dataset.id);
+                const entry = history.find(item => item.id === entryId);
+                if (entry) {
+                    entry.note = e.target.value;
+                    localStorage.setItem('nexusReconHistory', JSON.stringify(history));
+                }
+            }
+        });
+      }
 
-      clearHistoryBtn.addEventListener('click', () => {
-          history = [];
-          localStorage.removeItem('nexusReconHistory');
-          renderHistory();
-      });
+      if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            history = [];
+            localStorage.removeItem('nexusReconHistory');
+            renderHistory();
+        });
+      }
 
       const executeDork = (event) => {
         if (event.target.classList.contains('copy-btn')) return;
-        const domain = targetDomainInput.value.trim();
+        const { value: domain } = getActiveTarget();
         if (!domain) {
           handleMissingTarget();
           return;
@@ -638,7 +716,7 @@
       };
 
       const copyDork = (copyBtn) => {
-        const domain = targetDomainInput.value.trim();
+        const { value: domain } = getActiveTarget();
         if (!domain) {
           handleMissingTarget();
           return;
@@ -676,11 +754,14 @@
         }
       });
 
-      clearButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        targetDomainInput.value = '';
-        errorMessage.classList.add('hidden');
-      });
+      if (clearButton) {
+        clearButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const { element } = getActiveTarget();
+          element.value = '';
+          errorMessage.classList.add('hidden');
+        });
+      }
 
       const typeEffect = (element, text, speed = 50, callback) => {
         element.textContent = "";
@@ -698,7 +779,7 @@
 
       // --- Automated Profiler Logic ---
       const runProfiler = () => {
-          const target = targetDomainInput.value.trim();
+          const { value: target } = getActiveTarget();
           if (!target) {
               handleMissingTarget();
               return;
@@ -734,24 +815,26 @@
           });
       };
 
-      initiateProfileBtn.addEventListener('click', runProfiler);
+      if (initiateProfileBtn) initiateProfileBtn.addEventListener('click', runProfiler);
       
       // --- Favicon Pivot Logic ---
-      faviconPivotBtn.addEventListener('click', () => {
-          const target = targetDomainInput.value.trim();
-          if (!target) {
-              handleMissingTarget();
-              return;
-          }
-          addHistoryEntry('Favicon Pivot', target);
-          const shodanDork = `http.html:"${target}"`;
-          const shodanUrl = `https://www.shodan.io/search?query=${encodeURIComponent(shodanDork)}`;
-          window.open(shodanUrl, '_blank');
-      });
+      if (faviconPivotBtn) {
+        faviconPivotBtn.addEventListener('click', () => {
+            const { value: target } = getActiveTarget();
+            if (!target) {
+                handleMissingTarget();
+                return;
+            }
+            addHistoryEntry('Favicon Pivot', target);
+            const shodanDork = `http.html:"${target}"`;
+            const shodanUrl = `https://www.shodan.io/search?query=${encodeURIComponent(shodanDork)}`;
+            window.open(shodanUrl, '_blank');
+        });
+      }
 
       // --- Tech Stack Identifier Logic ---
       const identifyTechStack = () => {
-          const target = targetDomainInput.value.trim();
+          const { value: target } = getActiveTarget();
           if (!target) {
               handleMissingTarget();
               return;
@@ -787,11 +870,11 @@
           });
       };
       
-      identifyTechBtn.addEventListener('click', identifyTechStack);
+      if (identifyTechBtn) identifyTechBtn.addEventListener('click', identifyTechStack);
 
       // --- External Recon Logic ---
       const openExternalTool = (urlTemplate, toolName) => {
-        const target = targetDomainInput.value.trim();
+        const { value: target } = getActiveTarget();
         if(!target) {
           handleMissingTarget();
           return;
@@ -808,68 +891,34 @@
         window.open(urlTemplate, '_blank');
       };
 
-      externalGithubBtn.addEventListener('click', () => openExternalTool('https://github.com/search?q="TARGET_QUERY"&type=code', 'GitHub Search'));
-      externalPastebinBtn.addEventListener('click', () => openExternalTool('https://www.google.com/search?q=site:pastebin.com "TARGET_QUERY"', 'Pastebin Search'));
-      externalVirusTotalBtn.addEventListener('click', () => openExternalTool('https://www.virustotal.com/gui/domain/TARGET_QUERY', 'VirusTotal'));
-      externalSecurityTrailsBtn.addEventListener('click', () => openExternalTool('https://securitytrails.com/domain/TARGET_QUERY/dns', 'SecurityTrails'));
-      externalWaybackBtn.addEventListener('click', () => openExternalTool('https://web.archive.org/web/*/TARGET_QUERY', 'Waybackurls'));
-      externalCensysBtn.addEventListener('click', () => openExternalTool('https://search.censys.io/search?resource=hosts&q=TARGET_QUERY', 'Censys'));
-      externalCrtshBtn.addEventListener('click', () => openExternalTool('https://crt.sh/?q=TARGET_QUERY', 'crt.sh'));
-      externalDnsdumpsterBtn.addEventListener('click', () => openExternalTool('https://dnsdumpster.com/', 'DNSdumpster'));
-      externalHunterBtn.addEventListener('click', () => openExternalTool('https://hunter.io/search?domain=TARGET_QUERY', 'Hunter.io'));
-      externalPassiveTotalBtn.addEventListener('click', () => openExternalTool('https://community.riskiq.com/search/TARGET_QUERY', 'PassiveTotal'));
-      externalLinkedinBtn.addEventListener('click', () => openExternalTool('https://www.google.com/search?q=site:linkedin.com/in "TARGET_QUERY"', 'LinkedIn Search'));
-      externalEmailRepBtn.addEventListener('click', () => window.open('https://emailrep.io/', '_blank'));
-      externalUrlscanBtn.addEventListener('click', () => openExternalTool('https://urlscan.io/search/#TARGET_QUERY', 'urlscan.io'));
-      externalViewdnsBtn.addEventListener('click', () => openExternalTool('https://viewdns.info/whois/?domain=TARGET_QUERY', 'ViewDNS.info'));
-      externalWhoisBtn.addEventListener('click', () => openExternalTool('https://who.is/whois/TARGET_QUERY', 'who.is'));
-      externalLeakixBtn.addEventListener('click', () => openExternalTool('https://leakix.net/search?q=TARGET_QUERY', 'LeakIX'));
-      externalSearchcodeBtn.addEventListener('click', () => openExternalTool('https://searchcode.com/?q=TARGET_QUERY', 'Searchcode'));
-      externalGrepappBtn.addEventListener('click', () => openExternalTool('https://grep.app/?q=TARGET_QUERY', 'Grep.app'));
-      externalFofaBtn.addEventListener('click', () => openExternalTool('https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', 'FOFA'));
-      externalZoomeyeBtn.addEventListener('click', () => openExternalTool('https://www.zoomeye.org/searchResult?q=TARGET_QUERY', 'ZoomEye'));
-      externalNetlasBtn.addEventListener('click', () => openExternalTool('https://app.netlas.io/host/?q=TARGET_QUERY', 'Netlas.io'));
-      externalBuiltwithBtn.addEventListener('click', () => openExternalTool('https://builtwith.com/?TARGET_QUERY', 'BuiltWith'));
-      externalPublicwwwBtn.addEventListener('click', () => openExternalTool('https://publicwww.com/websites/%22TARGET_QUERY%22/', 'PublicWWW'));
-      externalSpyonwebBtn.addEventListener('click', () => openExternalTool('http://spyonweb.com/TARGET_QUERY', 'SpyOnWeb'));
-      externalGrayhatBtn.addEventListener('click', () => window.open('https://buckets.grayhatwarfare.com/', '_blank'));
-      externalRapiddnsBtn.addEventListener('click', () => openExternalTool('https://rapiddns.io/subdomain/TARGET_QUERY', 'RapidDNS'));
-      externalPtrarchiveBtn.addEventListener('click', () => openExternalTool('http://ptrarchive.com/tools/search.htm?label=TARGET_QUERY', 'PTR Archive'));
-      externalDnslyticsBtn.addEventListener('click', () => openExternalTool('https://dnslytics.com/domain/TARGET_QUERY', 'DNSlytics'));
-      externalDomainbigdataBtn.addEventListener('click', () => openExternalTool('https://domainbigdata.com/TARGET_QUERY', 'DomainBigData'));
-      externalDehashedBtn.addEventListener('click', () => openExternalTool('https://www.dehashed.com/search?query=domain%3ATARGET_QUERY', 'Dehashed'));
-      externalScyllaBtn.addEventListener('click', () => window.open('https://scylla.sh/search', '_blank'));
-      externalHaveibeenpwnedBtn.addEventListener('click', () => window.open('https://haveibeenpwned.com/', '_blank'));
-      externalCrunchbaseBtn.addEventListener('click', () => openExternalTool('https://www.crunchbase.com/textsearch?q=TARGET_QUERY', 'Crunchbase'));
-      externalApolloBtn.addEventListener('click', () => openExternalTool('https://www.apollo.io/search/companies?q=TARGET_QUERY', 'Apollo.io'));
-      externalGreynoiseBtn.addEventListener('click', () => openExternalTool('https://viz.greynoise.io/query?gnql=TARGET_QUERY', 'GreyNoise'));
-      externalQwantBtn.addEventListener('click', () => openExternalTool('https://www.qwant.com/?q=TARGET_QUERY&t=web', 'Qwant'));
-      externalYandexBtn.addEventListener('click', () => openExternalTool('https://yandex.com/search/?text=TARGET_QUERY', 'Yandex'));
-      externalNetcraftBtn.addEventListener('click', () => openExternalTool('https://search.netcraft.com/?q=TARGET_QUERY', 'Netcraft'));
-      externalAhmiaBtn.addEventListener('click', () => openExternalTool('https://ahmia.fi/search/?q=TARGET_QUERY', 'Ahmia.fi'));
-      externalDnsdbBtn.addEventListener('click', () => openExternalTool('https://dnsdb.io/', 'DNSDB'));
-      externalSecurityHeadersBtn.addEventListener('click', () => openExternalTool('https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', 'SecurityHeaders.io'));
-      externalWhatsmynamewebBtn.addEventListener('click', () => openExternalTool('https://whatsmyname.app/?q=TARGET_QUERY', 'WhatsMyName'));
+      for (const [id, tool] of Object.entries(externalButtons)) {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', () => openExternalTool(tool.url, tool.name));
+        }
+      }
 
       // --- Dorking Modules Toggle Logic ---
-      toggleDorkingBtn.addEventListener('click', () => {
-          const wasHidden = dorkingContainer.classList.contains('hidden');
-          dorkingContainer.classList.toggle('hidden');
-          
-          if (wasHidden) {
-              toggleDorkingBtn.textContent = '[ Hide Google Dorking Modules ]';
-              // Scroll to the container after a tiny delay to ensure it's rendered
-              setTimeout(() => {
-                  dorkingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100); 
-          } else {
-              toggleDorkingBtn.textContent = '[ Show Google Dorking Modules ]';
-          }
-      });
+      if (toggleDorkingBtn) {
+        toggleDorkingBtn.addEventListener('click', () => {
+            const wasHidden = dorkingContainer.classList.contains('hidden');
+            dorkingContainer.classList.toggle('hidden');
+            
+            if (wasHidden) {
+                toggleDorkingBtn.textContent = '[ Hide Google Dorking Modules ]';
+                // Scroll to the container after a tiny delay to ensure it's rendered
+                setTimeout(() => {
+                    dorkingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100); 
+            } else {
+                toggleDorkingBtn.textContent = '[ Show Google Dorking Modules ]';
+            }
+        });
+      }
 
       // --- Gemini AI Dork Generation Logic ---
       const generateAiDork = async () => {
-          const domain = targetDomainInput.value.trim();
+          const { value: domain } = getActiveTarget();
           const userRequest = aiPromptInput.value.trim();
           if (!domain || !userRequest) {
               handleMissingTarget();
@@ -947,34 +996,103 @@ Generate the Google Dork:`;
           aiLoadingMessage.classList.add('hidden');
       };
 
-      generateAiDorkBtn.addEventListener('click', generateAiDork);
+      if (generateAiDorkBtn) generateAiDorkBtn.addEventListener('click', generateAiDork);
 
-      copyAiDorkBtn.addEventListener('click', () => {
-          const dorkToCopy = aiDorkOutput.textContent;
-          const textArea = document.createElement('textarea');
-          textArea.value = dorkToCopy;
-          document.body.appendChild(textArea);
-          textArea.select();
-          try {
-              document.execCommand('copy');
-              copyAiDorkBtn.textContent = 'Copied!';
-          } catch (err) {
-              console.error('Failed to copy text: ', err);
-              copyAiDorkBtn.textContent = 'Error!';
-          }
-          document.body.removeChild(textArea);
-          setTimeout(() => copyAiDorkBtn.textContent = 'Copy', 1500);
-      });
+      if (copyAiDorkBtn) {
+        copyAiDorkBtn.addEventListener('click', () => {
+            const dorkToCopy = aiDorkOutput.textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = dorkToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyAiDorkBtn.textContent = 'Copied!';
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                copyAiDorkBtn.textContent = 'Error!';
+            }
+            document.body.removeChild(textArea);
+            setTimeout(() => copyAiDorkBtn.textContent = 'Copy', 1500);
+        });
+      }
 
-      searchAiDorkBtn.addEventListener('click', () => {
-          const dorkToSearch = aiDorkOutput.textContent;
-          if (dorkToSearch) {
-              window.open(`https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`, '_blank');
-          }
+      if (searchAiDorkBtn) {
+        searchAiDorkBtn.addEventListener('click', () => {
+            const dorkToSearch = aiDorkOutput.textContent;
+            if (dorkToSearch) {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`, '_blank');
+            }
+        });
+      }
+      
+      // --- Workspace Logic ---
+      const saveWorkspaceData = () => {
+          const { value: target } = getActiveTarget();
+          if (!target) return;
+          const data = {
+              subdomains: workspaceSubdomains.value,
+              emails: workspaceEmails.value,
+              ips: workspaceIps.value,
+              urls: workspaceUrls.value,
+              notes: workspaceNotes.value,
+          };
+          localStorage.setItem(`nexusWorkspace_${target}`, JSON.stringify(data));
+      };
+
+      const loadWorkspaceData = () => {
+          const { value: target } = getActiveTarget();
+          const data = JSON.parse(localStorage.getItem(`nexusWorkspace_${target}`)) || {};
+          workspaceSubdomains.value = data.subdomains || '';
+          workspaceEmails.value = data.emails || '';
+          workspaceIps.value = data.ips || '';
+          workspaceUrls.value = data.urls || '';
+          workspaceNotes.value = data.notes || '';
+      };
+
+      if (targetInput) targetInput.addEventListener('input', loadWorkspaceData);
+      workspaceElements.forEach(el => {
+          if (el) el.addEventListener('input', saveWorkspaceData);
       });
       
-      // Initial render of history on load
+      if (clearWorkspaceBtn) {
+        clearWorkspaceBtn.addEventListener('click', () => {
+            const { value: target } = getActiveTarget();
+            if (target) {
+                localStorage.removeItem(`nexusWorkspace_${target}`);
+                loadWorkspaceData(); // This will clear the fields
+            }
+        });
+      }
+
+      // --- Recon Mode Switching Logic ---
+      reconModeTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+              reconModeTabs.forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              
+              const mode = tab.dataset.mode;
+              if (mode === 'website') {
+                  targetInput.placeholder = 'Enter Domain or Company...';
+              } else {
+                  targetInput.placeholder = 'Enter Username, Email, or Phone...';
+              }
+
+              reconModules.forEach(module => {
+                  const type = module.dataset.reconType;
+                  if (type === 'all' || type === mode) {
+                      module.style.display = '';
+                  } else {
+                      module.style.display = 'none';
+                  }
+              });
+              loadWorkspaceData(); // Load data for the new active target
+          });
+      });
+      
+      // Initial render of history and workspace on load
       renderHistory();
+      loadWorkspaceData();
     });
   </script>
 
