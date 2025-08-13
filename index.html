@@ -6,8 +6,8 @@
   <title>NexusRecon - Advanced Recon Framework</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Font Awesome for Live2D widget icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <!-- Cyberpunk Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%230a0a1a;stroke:%2300ffdd;stroke-miterlimit:10;stroke-width:3px;%7D.cls-2%7Bfill:%23ff00c1;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M50,5A45,45,0,1,1,5,50,45,45,0,0,1,50,5Z'/%3E%3Ccircle class='cls-2' cx='50' cy='50' r='15'/%3E%3Cpath class='cls-1' d='M25,50a25,25,0,0,1,50,0'/%3E%3C/svg%3E" type="image/svg+xml">
   <style>
     @keyframes grid-pan {
       0% { background-position: 0% 0%; }
@@ -24,7 +24,13 @@
         linear-gradient(to right, rgba(0, 221, 255, 0.1) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(0, 221, 255, 0.1) 1px, transparent 1px);
       background-size: 40px 40px;
-      animation: grid-pan 120s linear infinite; /* Made animation slower */
+      animation: grid-pan 120s linear infinite;
+      cursor: none; /* Hide the default cursor */
+      text-shadow: 0 0 3px rgba(0, 255, 221, 0.4); /* Accessibility: Contrast */
+    }
+    
+    a, button, .copy-btn, .hacker-btn {
+        cursor: none;
     }
 
     .hacker-container {
@@ -57,17 +63,11 @@
 
 
     .glitch {
-      font-size: 2.5rem; /* Slightly smaller on mobile */
       font-weight: 700;
       position: relative;
       color: #00ffdd;
       text-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
       animation: glitch-animation 5s infinite linear alternate-reverse;
-    }
-    @media (min-width: 768px) {
-      .glitch {
-        font-size: 3rem;
-      }
     }
 
     .glitch::before,
@@ -104,11 +104,19 @@
         color: #00ffdd;
         transition: all 0.3s ease;
     }
+    
+    /* Accessibility: Focus Indicators */
     .hacker-input:focus, .note-input:focus, .workspace-textarea:focus, .hacker-select:focus {
         outline: none;
-        box-shadow: 0 0 10px #00ffdd;
+        box-shadow: 0 0 10px #00ffdd, 0 0 15px #ff00c1;
         background-color: rgba(0, 221, 255, 0.1);
     }
+    
+    .hacker-btn:focus-visible, .tab-btn:focus-visible, .dork-item button:focus-visible {
+        outline: none;
+        box-shadow: 0 0 15px #ff00c1, 0 0 5px #ff00c1 inset;
+    }
+
     .hacker-select option {
         background-color: #0a0a1a;
         color: #00ffdd;
@@ -122,7 +130,7 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      will-change: transform; /* Performance hint for browser */
+      will-change: transform;
     }
     .hacker-btn::before {
         content: '';
@@ -146,7 +154,6 @@
     .category-title {
         color: #ff00c1;
         text-shadow: 0 0 8px #ff00c1;
-        /* Replaced pulse with a more subtle glow for performance */
     }
     
     .subcategory-title {
@@ -170,7 +177,7 @@
     }
     .dork-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Adjusted for better responsiveness */
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
         gap: 1rem;
     }
     
@@ -196,17 +203,197 @@
         color: #0a0a1a;
         box-shadow: 0 0 15px #00ffdd;
     }
+
+    /* Sidebar Styles */
+    #sidebar {
+        position: fixed;
+        bottom: 1rem;
+        left: 1rem;
+        z-index: 1000;
+        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        pointer-events: none; /* Make container non-interactive by default */
+    }
+    #sidebar.open {
+        pointer-events: auto; /* Make container interactive when open */
+    }
+    #sidebar-toggle {
+        pointer-events: auto; /* Always allow the toggle button to be clicked */
+        transition: all 0.3s ease;
+    }
+    #sidebar-panel {
+        transform: translateX(-120%);
+        opacity: 0;
+        pointer-events: none;
+        width: 90vw;
+        max-width: 500px;
+        max-height: 80vh;
+    }
+    #sidebar.open #sidebar-panel {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    #sidebar.open #sidebar-toggle {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    /* Cyberpunk Live2D Cat Style */
+    #live2d-widget canvas {
+        filter: hue-rotate(220deg) saturate(1.5) drop-shadow(0 0 8px #ff00c1);
+        transition: filter 0.5s ease;
+    }
+    #live2d-widget canvas:hover {
+        filter: hue-rotate(280deg) saturate(2) drop-shadow(0 0 12px #00ffdd);
+    }
+
+    /* Disclaimer Modal Styles */
+    .content-hidden {
+        filter: blur(8px);
+        pointer-events: none;
+        transition: filter 0.3s ease;
+    }
+
+    /* --- Custom Cursor Styling --- */
+    .cursor {
+        width: 30px;
+        height: 30px;
+        border: 2px solid #ff00c1; /* Magenta border */
+        border-radius: 50%;
+        position: fixed; /* Use fixed positioning to stay in the viewport */
+        pointer-events: none; /* Allows clicking through the cursor element */
+        transform: translate(-50%, -50%); /* Center the cursor on the mouse pointer */
+        z-index: 10000; /* Set a very high z-index */
+        transition: transform 0.1s ease-out;
+        box-shadow: 0 0 10px #ff00c1, 0 0 20px #ff00c1, inset 0 0 5px #ff00c1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Create the crosshair effect using pseudo-elements */
+    .cursor::before,
+    .cursor::after {
+        content: '';
+        position: absolute;
+        background-color: #00ffdd; /* Cyan crosshair */
+        box-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
+    }
+
+    .cursor::before {
+        width: 2px;
+        height: 10px;
+    }
+
+    .cursor::after {
+        width: 10px;
+        height: 2px;
+    }
+    
+    /* --- Cursor Trail Styling --- */
+    .trail {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999; /* Slightly lower than the cursor itself */
+        color: #00ff41; /* Green matrix glow for the trail */
+        font-size: 1.2rem;
+        text-shadow: 0 0 8px #00ff41;
+        animation: fadeOut 0.8s forwards;
+        transform: translate(-50%, -50%); /* Center the character */
+    }
+
+    /* Animation for the trail to fade and shrink */
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+    }
+
+    /* --- Click Animation Styling --- */
+    .click-effect {
+        width: 80px;
+        height: 80px;
+        border: 2px solid #ff00c1; /* Magenta */
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        z-index: 10001; /* Above cursor */
+        opacity: 0; /* Start invisible */
+        animation: click-animation 0.5s ease-out;
+    }
+
+    @keyframes click-animation {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      80% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* --- Social Icons Styling --- */
+    .social-icon {
+        color: #00ffdd;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 0 5px #00ffdd);
+    }
+    .social-icon:hover {
+        color: #ff00c1;
+        transform: scale(1.1) rotate(5deg);
+        filter: drop-shadow(0 0 15px #ff00c1);
+    }
+
+    /* --- Mobile Specific Styles --- */
+    @media (max-width: 768px) {
+      .cursor, .trail {
+        display: none;
+      }
+      body, a, button, .copy-btn, .hacker-btn {
+        cursor: auto;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-200">
 
-  <div class="container mx-auto px-4 py-8 md:py-12">
+  <div class="cursor"></div>
+
+  <div id="disclaimer-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9998] backdrop-blur-sm">
+      <div class="hacker-container rounded-lg p-6 w-full max-w-lg m-4 text-center">
+          <div>
+              <h2 class="category-title text-3xl mb-4">[ WARNING ]</h2>
+              <p class="text-gray-300 mb-6">
+                  This tool is intended for educational and authorized security testing purposes only.
+                  Any actions and activities performed using NexusRecon are the sole responsibility of the user.
+                  The creators of this tool are not responsible for any misuse or damage caused by this program.
+                  Use responsibly and with proper authorization.
+              </p>
+              <button id="agree-btn" class="w-full hacker-btn font-bold py-3 px-6 rounded-md">
+                  [ I Understand & Agree ]
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <div class="container mx-auto p-4 sm:px-6 md:px-8 py-8">
     <header class="text-center mb-10">
-      <h1 class="glitch" data-text="NexusRecon">NexusRecon</h1>
-      <p class="text-cyan-400 mt-4 text-lg">[ Advanced Reconnaissance Framework ]</p>
+      <h1 class="glitch text-4xl sm:text-5xl" data-text="NexusRecon">NexusRecon</h1>
+      <p class="text-cyan-400 mt-4 text-base sm:text-lg">[ Advanced Reconnaissance Framework ]</p>
     </header>
 
-    <main>
+    <main id="main-content">
       <!-- Target Input Section -->
       <div class="mb-12 hacker-container p-6 rounded-lg">
         <div> <!-- This extra div is for the corner brackets -->
@@ -226,66 +413,69 @@
       <!-- Recon Modules -->
       <div class="space-y-10">
 
-        <!-- Live CTI & Vulnerability Feed -->
-        <div data-recon-type="all">
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Live CTI & Vulnerability Feed</h2>
-            <div class="hacker-container p-6 rounded-lg space-y-4">
-                <div>
-                    <p class="text-gray-400 mb-4">// Latest threat intelligence. Feed is static and requires a backend to be live.</p>
-                    <div id="cti-feed" class="max-h-96 overflow-y-auto space-y-3 pr-2">
-                        <!-- CTI entries will be injected here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Investigation Workspace -->
-        <div data-recon-type="all">
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
-            <div class="hacker-container p-6 rounded-lg space-y-4">
-                <div>
-                    <div class="flex justify-between items-center mb-4">
-                        <p class="text-gray-400">// Notes are saved per-target in your browser...</p>
-                        <button id="clear-workspace" class="hacker-btn text-sm p-2 border-red-500 text-red-400">[ Clear Workspace for this Target ]</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="workspace-subdomains" class="block text-cyan-400 mb-2">Subdomains:</label>
-                            <textarea id="workspace-subdomains" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com&#10;dev.example.com"></textarea>
-                        </div>
-                        <div>
-                            <label for="workspace-emails" class="block text-cyan-400 mb-2">Email Addresses:</label>
-                            <textarea id="workspace-emails" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="admin@example.com"></textarea>
-                        </div>
-                        <div>
-                            <label for="workspace-ips" class="block text-cyan-400 mb-2">IP Addresses:</label>
-                            <textarea id="workspace-ips" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="192.168.1.1"></textarea>
-                        </div>
-                        <div>
-                            <label for="workspace-urls" class="block text-cyan-400 mb-2">Interesting URLs:</label>
-                            <textarea id="workspace-urls" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com/login.php"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                             <label for="workspace-notes" class="block text-cyan-400 mb-2">General Notes:</label>
-                             <textarea id="workspace-notes" rows="6" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="Found potential vulnerability in..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Session History -->
-        <div data-recon-type="all">
-            <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History</h2>
-            <div class="hacker-container p-6 rounded-lg space-y-4">
-                <div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-gray-400">// Your activity is saved locally in your browser...</p>
-                        <button id="clear-history" class="hacker-btn text-sm p-2 border-red-500 text-red-400">[ Clear History ]</button>
-                    </div>
-                    <div id="history-container" class="mt-4 max-h-96 overflow-y-auto space-y-3 pr-2">
-                        <!-- History entries will be injected here -->
-                    </div>
+        <!-- Investigation Workspace & History Sidebar -->
+        <div id="sidebar">
+            <button id="sidebar-toggle" class="hacker-btn p-4 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </button>
+            <div id="sidebar-panel" class="hacker-container p-6 rounded-lg overflow-y-auto">
+                <button id="sidebar-close" class="absolute top-2 right-2 text-cyan-400 hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="space-y-8">
+                      <!-- Investigation Workspace -->
+                      <div data-recon-type="all">
+                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
+                          <div class="space-y-4">
+                              <div>
+                                  <div class="flex justify-between items-center mb-4">
+                                      <p class="text-gray-400 text-sm">// Notes are saved per-target...</p>
+                                      <button id="clear-workspace" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear Workspace ]</button>
+                                  </div>
+                                  <div class="grid grid-cols-1 gap-4">
+                                      <div>
+                                          <label for="workspace-subdomains" class="block text-cyan-400 mb-2">Subdomains:</label>
+                                          <textarea id="workspace-subdomains" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com&#10;dev.example.com"></textarea>
+                                      </div>
+                                      <div>
+                                          <label for="workspace-emails" class="block text-cyan-400 mb-2">Email Addresses:</label>
+                                          <textarea id="workspace-emails" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="admin@example.com"></textarea>
+                                      </div>
+                                      <div>
+                                          <label for="workspace-ips" class="block text-cyan-400 mb-2">IP Addresses:</label>
+                                          <textarea id="workspace-ips" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="192.168.1.1"></textarea>
+                                      </div>
+                                      <div>
+                                          <label for="workspace-urls" class="block text-cyan-400 mb-2">Interesting URLs:</label>
+                                          <textarea id="workspace-urls" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com/login.php"></textarea>
+                                      </div>
+                                      <div>
+                                          <label for="workspace-notes" class="block text-cyan-400 mb-2">General Notes:</label>
+                                          <textarea id="workspace-notes" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="Found potential vulnerability in..."></textarea>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- Session History -->
+                      <div data-recon-type="all">
+                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History</h2>
+                          <div class="space-y-4">
+                              <div>
+                                  <div class="flex justify-between items-center">
+                                      <p class="text-gray-400 text-sm">// Your activity is saved locally...</p>
+                                      <button id="clear-history" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear History ]</button>
+                                  </div>
+                                  <div id="history-container" class="mt-4 max-h-64 overflow-y-auto space-y-3 pr-2">
+                                      <!-- History entries will be injected here -->
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                 </div>
             </div>
         </div>
@@ -334,51 +524,54 @@
                     <div>
                         <h3 class="subcategory-title text-xl font-semibold mb-4">// OSINT & External Tools</h3>
                         <div class="dork-grid">
-                            <button id="external-virustotal" class="hacker-btn p-3" data-recon-type="website">[ VirusTotal ]</button>
-                            <button id="external-censys" class="hacker-btn p-3" data-recon-type="website">[ Censys ]</button>
-                            <button id="external-shodan" class="hacker-btn p-3" data-recon-type="website">[ Shodan ]</button>
-                            <button id="external-netlas" class="hacker-btn p-3" data-recon-type="website">[ Netlas.io ]</button>
-                            <button id="external-fofa" class="hacker-btn p-3" data-recon-type="website">[ FOFA.so ]</button>
-                            <button id="external-zoomeye" class="hacker-btn p-3" data-recon-type="website">[ ZoomEye ]</button>
-                            <button id="external-securityheaders" class="hacker-btn p-3" data-recon-type="website">[ SecurityHeaders.io ]</button>
-                            <button id="external-securitytrails" class="hacker-btn p-3" data-recon-type="website">[ SecurityTrails ]</button>
-                            <button id="external-crtsh" class="hacker-btn p-3" data-recon-type="website">[ crt.sh ]</button>
-                            <button id="external-dnsdumpster" class="hacker-btn p-3" data-recon-type="website">[ DNSdumpster ]</button>
-                            <button id="external-passivetotal" class="hacker-btn p-3" data-recon-type="website">[ PassiveTotal ]</button>
-                            <button id="external-viewdns" class="hacker-btn p-3" data-recon-type="website">[ ViewDNS.info ]</button>
-                            <button id="external-whois" class="hacker-btn p-3" data-recon-type="website">[ who.is ]</button>
-                            <button id="external-rapiddns" class="hacker-btn p-3" data-recon-type="website">[ RapidDNS ]</button>
-                            <button id="external-ptrarchive" class="hacker-btn p-3" data-recon-type="website">[ PTR Archive ]</button>
-                            <button id="external-dnslytics" class="hacker-btn p-3" data-recon-type="website">[ DNSlytics ]</button>
-                            <button id="external-domainbigdata" class="hacker-btn p-3" data-recon-type="website">[ DomainBigData ]</button>
-                            <button id="external-dnsdb" class="hacker-btn p-3" data-recon-type="website">[ DNSDB ]</button>
-                            <button id="external-github" class="hacker-btn p-3" data-recon-type="all">[ GitHub ]</button>
-                            <button id="external-pastebin" class="hacker-btn p-3" data-recon-type="all">[ Pastebin ]</button>
-                            <button id="external-leakix" class="hacker-btn p-3" data-recon-type="website">[ LeakIX ]</button>
-                            <button id="external-grepapp" class="hacker-btn p-3" data-recon-type="all">[ Grep.app ]</button>
-                            <button id="external-searchcode" class="hacker-btn p-3" data-recon-type="all">[ Searchcode ]</button>
-                            <button id="external-grayhat" class="hacker-btn p-3" data-recon-type="website">[ Grayhat Warfare ]</button>
-                            <button id="external-dehashed" class="hacker-btn p-3" data-recon-type="all">[ Dehashed ]</button>
-                            <button id="external-scylla" class="hacker-btn p-3" data-recon-type="all">[ Scylla.sh ]</button>
-                            <button id="external-haveibeenpwned" class="hacker-btn p-3" data-recon-type="all">[ HaveIBeenPwned ]</button>
-                            <button id="external-wayback" class="hacker-btn p-3" data-recon-type="website">[ Waybackurls ]</button>
-                            <button id="external-urlscan" class="hacker-btn p-3" data-recon-type="website">[ urlscan.io ]</button>
-                            <button id="external-builtwith" class="hacker-btn p-3" data-recon-type="website">[ BuiltWith ]</button>
-                            <button id="external-publicwww" class="hacker-btn p-3" data-recon-type="website">[ PublicWWW ]</button>
-                            <button id="external-spyonweb" class="hacker-btn p-3" data-recon-type="website">[ SpyOnWeb ]</button>
-                            <button id="external-hunter" class="hacker-btn p-3" data-recon-type="website">[ Hunter.io ]</button>
-                            <button id="external-emailrep" class="hacker-btn p-3" data-recon-type="all">[ EmailRep.io ]</button>
-                            <button id="external-linkedin" class="hacker-btn p-3" data-recon-type="all">[ LinkedIn Search ]</button>
-                            <button id="external-crunchbase" class="hacker-btn p-3" data-recon-type="all">[ Crunchbase ]</button>
-                            <button id="external-apollo" class="hacker-btn p-3" data-recon-type="all">[ Apollo.io ]</button>
-                            <button id="external-greynoise" class="hacker-btn p-3" data-recon-type="website">[ GreyNoise ]</button>
-                            <button id="external-whatsmynameweb" class="hacker-btn p-3" data-recon-type="user">[ WhatsMyName ]</button>
-                            <button id="external-truecaller" class="hacker-btn p-3" data-recon-type="user">[ Truecaller ]</button>
-                            <button id="external-syncme" class="hacker-btn p-3" data-recon-type="user">[ Sync.me ]</button>
-                            <button id="external-qwant" class="hacker-btn p-3" data-recon-type="all">[ Qwant ]</button>
-                            <button id="external-yandex" class="hacker-btn p-3" data-recon-type="all">[ Yandex ]</button>
-                            <button id="external-netcraft" class="hacker-btn p-3" data-recon-type="website">[ Netcraft ]</button>
-                            <button id="external-ahmia" class="hacker-btn p-3" data-recon-type="all">[ Ahmia.fi (TOR) ]</button>
+                            <button id="external-virustotal" class="hacker-btn p-3" data-recon-type="website" title="Analyze the target domain for malware and reputation.">[ VirusTotal ]</button>
+                            <button id="external-censys" class="hacker-btn p-3" data-recon-type="website" title="Find hosts and networks belonging to the target.">[ Censys ]</button>
+                            <button id="external-shodan" class="hacker-btn p-3" data-recon-type="website" title="Search for internet-connected devices and services.">[ Shodan ]</button>
+                            <button id="external-netlas" class="hacker-btn p-3" data-recon-type="website" title="Explore internet intelligence data.">[ Netlas.io ]</button>
+                            <button id="external-fofa" class="hacker-btn p-3" data-recon-type="website" title="Cyberspace asset search engine.">[ FOFA.so ]</button>
+                            <button id="external-zoomeye" class="hacker-btn p-3" data-recon-type="website" title="Another cyberspace asset search engine.">[ ZoomEye ]</button>
+                            <button id="external-securityheaders" class="hacker-btn p-3" data-recon-type="website" title="Check security-related HTTP headers.">[ SecurityHeaders.io ]</button>
+                            <button id="external-crtsh" class="hacker-btn p-3" data-recon-type="website" title="Search for SSL/TLS certificates.">[ crt.sh ]</button>
+                            <button id="external-dnsdumpster" class="hacker-btn p-3" data-recon-type="website" title="Find DNS records and subdomains.">[ DNSdumpster ]</button>
+                            <button id="external-viewdns" class="hacker-btn p-3" data-recon-type="website" title="A suite of DNS and network tools.">[ ViewDNS.info ]</button>
+                            <button id="external-whois" class="hacker-btn p-3" data-recon-type="website" title="Find domain registration information.">[ who.is ]</button>
+                            <button id="external-rapiddns" class="hacker-btn p-3" data-recon-type="website" title="DNS query tool for subdomains and records.">[ RapidDNS ]</button>
+                            <button id="external-github" class="hacker-btn p-3" data-recon-type="all" title="Search for code and secrets on GitHub.">[ GitHub ]</button>
+                            <button id="external-pastebin" class="hacker-btn p-3" data-recon-type="all" title="Search for leaks on Pastebin and similar sites.">[ Pastebin ]</button>
+                            <button id="external-leakix" class="hacker-btn p-3" data-recon-type="website" title="Search for publicly indexed leaks.">[ LeakIX ]</button>
+                            <button id="external-grepapp" class="hacker-btn p-3" data-recon-type="all" title="Search across git repositories.">[ Grep.app ]</button>
+                            <button id="external-searchcode" class="hacker-btn p-3" data-recon-type="all" title="Search for code across multiple sources.">[ Searchcode ]</button>
+                            <button id="external-grayhat" class="hacker-btn p-3" data-recon-type="website" title="Search public S3 buckets.">[ Grayhat Warfare ]</button>
+                            <button id="external-dehashed" class="hacker-btn p-3" data-recon-type="website" title="Search for credentials in data breaches.">[ Dehashed ]</button>
+                            <button id="external-haveibeenpwned" class="hacker-btn p-3" data-recon-type="user" title="Check if an email has been in a data breach.">[ HaveIBeenPwned ]</button>
+                            <button id="external-wayback" class="hacker-btn p-3" data-recon-type="website" title="Find archived versions of web pages.">[ Waybackurls ]</button>
+                            <button id="external-urlscan" class="hacker-btn p-3" data-recon-type="website" title="Scan and analyze URLs.">[ urlscan.io ]</button>
+                            <button id="external-builtwith" class="hacker-btn p-3" data-recon-type="website" title="Identify the technology stack of a website.">[ BuiltWith ]</button>
+                            <button id="external-publicwww" class="hacker-btn p-3" data-recon-type="website" title="Find websites with specific code snippets.">[ PublicWWW ]</button>
+                            <button id="external-hunter" class="hacker-btn p-3" data-recon-type="website" title="Find email addresses associated with a domain.">[ Hunter.io ]</button>
+                            <button id="external-emailrep" class="hacker-btn p-3" data-recon-type="user" title="Check the reputation of an email address.">[ EmailRep.io ]</button>
+                            <button id="external-linkedin" class="hacker-btn p-3" data-recon-type="all" title="Search for employees and company info.">[ LinkedIn Search ]</button>
+                            <button id="external-crunchbase" class="hacker-btn p-3" data-recon-type="all" title="Find business information about companies.">[ Crunchbase ]</button>
+                            <button id="external-greynoise" class="hacker-btn p-3" data-recon-type="website" title="Analyze internet-wide scan traffic.">[ GreyNoise ]</button>
+                            <button id="external-whatsmynameweb" class="hacker-btn p-3" data-recon-type="user" title="Find usernames across many sites.">[ WhatsMyName ]</button>
+                            <button id="external-truecaller" class="hacker-btn p-3" data-recon-type="user" title="Identify phone numbers.">[ Truecaller ]</button>
+                            <button id="external-syncme" class="hacker-btn p-3" data-recon-type="user" title="Another phone number identification service.">[ Sync.me ]</button>
+                            <button id="external-yandex" class="hacker-btn p-3" data-recon-type="all" title="Search engine with powerful image search.">[ Yandex ]</button>
+                            <button id="external-ahmia" class="hacker-btn p-3" data-recon-type="all" title="Search engine for Tor hidden services.">[ Ahmia.fi (TOR) ]</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Reconnaissance -->
+                <div data-recon-type="website">
+                    <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Visual Recon (Favicon Pivoting)</h2>
+                    <div class="hacker-container p-6 rounded-lg space-y-4">
+                        <div>
+                            <p class="text-gray-400">// Find related infrastructure by searching for the target's favicon hash on Shodan...</p>
+                            <button id="favicon-pivot" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
+                                [ Find by Favicon Hash (Shodan) ]
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:<hash>`.</p>
                         </div>
                     </div>
                 </div>
@@ -396,48 +589,6 @@
         
         <!-- Collapsible Dorking Modules Container -->
         <div id="dorking-modules-container" class="hidden space-y-10" data-recon-type="website">
-      
-            <!-- Visual Reconnaissance -->
-            <div>
-                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Visual Recon (Favicon Pivoting)</h2>
-                <div class="hacker-container p-6 rounded-lg space-y-4">
-                    <div>
-                        <p class="text-gray-400">// Find related infrastructure by searching for the target's favicon hash on Shodan...</p>
-                        <button id="favicon-pivot" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
-                            [ Find by Favicon Hash (Shodan) ]
-                        </button>
-                        <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:&lt;hash&gt;`.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI-Powered Dork Builder -->
-            <div>
-                <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> AI-Powered Dork Builder</h2>
-                <div class="hacker-container p-6 rounded-lg space-y-4">
-                    <div>
-                        <p class="text-gray-400">// Describe the vulnerability or file you're looking for...</p>
-                        <div>
-                            <label for="ai-prompt" class="block text-lg font-medium text-cyan-400 mb-2">Request:</label>
-                            <input type="text" id="ai-prompt" placeholder="e.g., find exposed Jira dashboards or secrets in Trello boards" class="w-full px-4 py-3 hacker-input rounded-md">
-                        </div>
-                        <button id="generate-ai-dork" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
-                            [ Generate Dork ]
-                        </button>
-                        <p id="ai-loading-message" class="text-cyan-400 mt-2 hidden">>> Generating dork...</p>
-                        <div id="ai-result-container" class="hidden mt-4">
-                            <label class="block text-lg font-medium text-cyan-400 mb-2">Generated Dork:</label>
-                            <div class="bg-black/50 p-4 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-cyan-400/50">
-                                <p id="ai-dork-output" class="text-white flex-grow whitespace-pre-wrap break-words"></p>
-                                <div class="flex flex-row gap-2 self-end sm:self-center">
-                                     <button id="copy-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm">Copy</button>
-                                     <button id="search-ai-dork" class="hacker-btn font-bold py-2 px-4 rounded-md text-sm bg-cyan-600/50 border-cyan-600">Search</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <!-- Basic Recon -->
             <div>
@@ -509,259 +660,112 @@
     </main>
 
     <footer class="text-center mt-12 text-gray-500">
-      <p>// Happy Hacking! Use responsibly and with authorization. //</p>
-      <p class="mt-4 text-sm italic">Made with <span class="text-red-500">&hearts;</span> by 4n1_1p4m</p>
+        <p>// Happy Hacking! Use responsibly and with authorization. //</p>
+        <p class="mt-4 text-sm italic">Made with <span class="text-red-500">&hearts;</span> by 4n1_1p4m</p>
+        <div class="flex justify-center items-center space-x-6 mt-4">
+            <a href="https://www.linkedin.com/in/anupamjaiswall" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+            </a>
+            <a href="https://github.com/anupamjaiswall" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            </a>
+            <a href="https://www.instagram.com/anupamjaiswall" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="https://www.buymeacoffee.com/anupamjaiswall" target="_blank" rel="noopener noreferrer" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+            </a>
+        </div>
     </footer>
   </div>
   
-  <!-- Live2D Widget Settings -->
-  <script>
-    var live2d_settings = {
-        "display": {
-            "position": "right",
-            "width": 132,
-            "height": 265,
-            "hOffset": 0,
-            "vOffset": -20
-        }
-    };
-  </script>
-
-  <!-- Live2D Widget Script -->
-  <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+  <!-- Live2D Widget Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/live2d-widget@3.1.4/lib/L2Dwidget.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // --- Element Selectors ---
+      const mainContainer = document.querySelector('.container');
+      const disclaimerModal = document.getElementById('disclaimer-modal');
+      const agreeBtn = document.getElementById('agree-btn');
+      const mainContent = document.getElementById('main-content');
       const targetInput = document.getElementById('target-input');
       const errorMessage = document.getElementById('error-message');
-      const dorkItems = document.querySelectorAll('.dork-item');
-      const clearButton = document.getElementById('clear-target');
       
       const reconModeTabs = document.querySelectorAll('#recon-mode-tabs .tab-btn');
-      const reconModules = document.querySelectorAll('[data-recon-type]');
-
-      const generateAiDorkBtn = document.getElementById('generate-ai-dork');
-      const aiPromptInput = document.getElementById('ai-prompt');
-      const aiResultContainer = document.getElementById('ai-result-container');
-      const aiDorkOutput = document.getElementById('ai-dork-output');
-      const copyAiDorkBtn = document.getElementById('copy-ai-dork');
-      const searchAiDorkBtn = document.getElementById('search-ai-dork');
-      const aiLoadingMessage = document.getElementById('ai-loading-message');
-
-      // Profiler Elements
-      const initiateProfileBtn = document.getElementById('initiate-profile');
+      
       const profilerResultsContainer = document.getElementById('profiler-results-container');
       const profilerStatus = document.getElementById('profiler-status');
       const profilerResultsList = document.getElementById('profiler-results-list');
       
-      // Visual Recon & Tech Stack Elements
-      const faviconPivotBtn = document.getElementById('favicon-pivot');
-      const identifyTechBtn = document.getElementById('identify-tech');
       const techResultsContainer = document.getElementById('tech-results-container');
       const techStatus = document.getElementById('tech-status');
       const techResultsList = document.getElementById('tech-results-list');
 
-      // External Recon Elements
-      const externalButtons = {
-        'external-github': { url: 'https://github.com/search?q="TARGET_QUERY"&type=code', name: 'GitHub Search' },
-        'external-pastebin': { url: 'https://www.google.com/search?q=site:pastebin.com "TARGET_QUERY"', name: 'Pastebin Search' },
-        'external-virustotal': { url: 'https://www.virustotal.com/gui/domain/TARGET_QUERY', name: 'VirusTotal' },
-        'external-securitytrails': { url: 'https://securitytrails.com/domain/TARGET_QUERY/dns', name: 'SecurityTrails' },
-        'external-wayback': { url: 'https://web.archive.org/web/*/TARGET_QUERY', name: 'Waybackurls' },
-        'external-censys': { url: 'https://search.censys.io/search?resource=hosts&q=TARGET_QUERY', name: 'Censys' },
-        'external-crtsh': { url: 'https://crt.sh/?q=TARGET_QUERY', name: 'crt.sh' },
-        'external-dnsdumpster': { url: 'https://dnsdumpster.com/', name: 'DNSdumpster' },
-        'external-hunter': { url: 'https://hunter.io/search?domain=TARGET_QUERY', name: 'Hunter.io' },
-        'external-passivetotal': { url: 'https://community.riskiq.com/search/TARGET_QUERY', name: 'PassiveTotal' },
-        'external-linkedin': { url: 'https://www.google.com/search?q=site:linkedin.com/in "TARGET_QUERY"', name: 'LinkedIn Search' },
-        'external-emailrep': { url: 'https://emailrep.io/', name: 'EmailRep.io' },
-        'external-urlscan': { url: 'https://urlscan.io/search/#TARGET_QUERY', name: 'urlscan.io' },
-        'external-viewdns': { url: 'https://viewdns.info/whois/?domain=TARGET_QUERY', name: 'ViewDNS.info' },
-        'external-whois': { url: 'https://who.is/whois/TARGET_QUERY', name: 'who.is' },
-        'external-leakix': { url: 'https://leakix.net/search?q=TARGET_QUERY', name: 'LeakIX' },
-        'external-searchcode': { url: 'https://searchcode.com/?q=TARGET_QUERY', name: 'Searchcode' },
-        'external-grepapp': { url: 'https://grep.app/?q=TARGET_QUERY', name: 'Grep.app' },
-        'external-fofa': { url: 'https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', name: 'FOFA' },
-        'external-zoomeye': { url: 'https://www.zoomeye.org/searchResult?q=TARGET_QUERY', name: 'ZoomEye' },
-        'external-netlas': { url: 'https://app.netlas.io/host/?q=TARGET_QUERY', name: 'Netlas.io' },
-        'external-builtwith': { url: 'https://builtwith.com/?TARGET_QUERY', name: 'BuiltWith' },
-        'external-publicwww': { url: 'https://publicwww.com/websites/%22TARGET_QUERY%22/', name: 'PublicWWW' },
-        'external-spyonweb': { url: 'http://spyonweb.com/TARGET_QUERY', name: 'SpyOnWeb' },
-        'external-grayhat': { url: 'https://buckets.grayhatwarfare.com/', name: 'Grayhat Warfare' },
-        'external-rapiddns': { url: 'https://rapiddns.io/subdomain/TARGET_QUERY', name: 'RapidDNS' },
-        'external-ptrarchive': { url: 'http://ptrarchive.com/tools/search.htm?label=TARGET_QUERY', name: 'PTR Archive' },
-        'external-dnslytics': { url: 'https://dnslytics.com/domain/TARGET_QUERY', name: 'DNSlytics' },
-        'external-domainbigdata': { url: 'https://domainbigdata.com/TARGET_QUERY', name: 'DomainBigData' },
-        'external-dehashed': { url: 'https://www.dehashed.com/search?query=domain%3ATARGET_QUERY', name: 'Dehashed' },
-        'external-scylla': { url: 'https://scylla.sh/search', name: 'Scylla.sh' },
-        'external-haveibeenpwned': { url: 'https://haveibeenpwned.com/', name: 'HaveIBeenPwned' },
-        'external-crunchbase': { url: 'https://www.crunchbase.com/textsearch?q=TARGET_QUERY', name: 'Crunchbase' },
-        'external-apollo': { url: 'https://www.apollo.io/search/companies?q=TARGET_QUERY', name: 'Apollo.io' },
-        'external-greynoise': { url: 'https://viz.greynoise.io/query?gnql=TARGET_QUERY', name: 'GreyNoise' },
-        'external-qwant': { url: 'https://www.qwant.com/?q=TARGET_QUERY&t=web', name: 'Qwant' },
-        'external-yandex': { url: 'https://yandex.com/search/?text=TARGET_QUERY', name: 'Yandex' },
-        'external-netcraft': { url: 'https://search.netcraft.com/?q=TARGET_QUERY', name: 'Netcraft' },
-        'external-ahmia': { url: 'https://ahmia.fi/search/?q=TARGET_QUERY', name: 'Ahmia.fi' },
-        'external-dnsdb': { url: 'https://dnsdb.io/', name: 'DNSDB' },
-        'external-securityheaders': { url: 'https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', name: 'SecurityHeaders.io' },
-        'external-whatsmynameweb': { url: 'https://whatsmyname.app/?q=TARGET_QUERY', name: 'WhatsMyName' },
-        'external-truecaller': { url: 'https://www.truecaller.com/search/in/TARGET_QUERY', name: 'Truecaller' },
-        'external-syncme': { url: 'https://sync.me/search/?number=TARGET_QUERY', name: 'Sync.me' }
-      };
-      
-      // Dorking Modules Toggle
       const toggleDorkingBtn = document.getElementById('toggle-dorking-modules');
       const dorkingContainer = document.getElementById('dorking-modules-container');
 
-      // History Elements
       const historyContainer = document.getElementById('history-container');
-      const clearHistoryBtn = document.getElementById('clear-history');
-      let history = JSON.parse(localStorage.getItem('nexusReconHistory')) || [];
       
-      // Workspace Elements
       const workspaceSubdomains = document.getElementById('workspace-subdomains');
       const workspaceEmails = document.getElementById('workspace-emails');
       const workspaceIps = document.getElementById('workspace-ips');
       const workspaceUrls = document.getElementById('workspace-urls');
       const workspaceNotes = document.getElementById('workspace-notes');
-      const clearWorkspaceBtn = document.getElementById('clear-workspace');
       const workspaceElements = [workspaceSubdomains, workspaceEmails, workspaceIps, workspaceUrls, workspaceNotes];
 
-      const getActiveTarget = () => {
-          return { value: targetInput.value.trim(), element: targetInput };
+      const sidebar = document.getElementById('sidebar');
+      
+      let history = JSON.parse(localStorage.getItem('nexusReconHistory')) || [];
+
+      // --- External Tools Data ---
+      const externalButtonsData = {
+        'external-virustotal': { url: 'https://www.virustotal.com/gui/domain/TARGET_QUERY', name: 'VirusTotal' },
+        'external-censys': { url: 'https://search.censys.io/search?resource=hosts&q=TARGET_QUERY', name: 'Censys' },
+        'external-shodan': { url: 'https://www.shodan.io/search?query=TARGET_QUERY', name: 'Shodan' },
+        'external-netlas': { url: 'https://app.netlas.io/host/TARGET_QUERY/', name: 'Netlas.io' },
+        'external-fofa': { url: 'https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', name: 'FOFA' },
+        'external-zoomeye': { url: 'https://www.zoomeye.org/searchResult?q=TARGET_QUERY', name: 'ZoomEye' },
+        'external-securityheaders': { url: 'https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', name: 'SecurityHeaders.io' },
+        'external-crtsh': { url: 'https://crt.sh/?q=TARGET_QUERY', name: 'crt.sh' },
+        'external-dnsdumpster': { url: 'https://dnsdumpster.com/', name: 'DNSdumpster' },
+        'external-viewdns': { url: 'https://viewdns.info/whois/?domain=TARGET_QUERY', name: 'ViewDNS.info' },
+        'external-whois': { url: 'https://who.is/whois/TARGET_QUERY', name: 'who.is' },
+        'external-rapiddns': { url: 'https://rapiddns.io/subdomain/TARGET_QUERY', name: 'RapidDNS' },
+        'external-github': { url: 'https://github.com/search?q="TARGET_QUERY"&type=code', name: 'GitHub Search' },
+        'external-pastebin': { url: 'https://www.google.com/search?q=site:pastebin.com "TARGET_QUERY"', name: 'Pastebin Search' },
+        'external-leakix': { url: 'https://leakix.net/search?q=TARGET_QUERY', name: 'LeakIX' },
+        'external-grepapp': { url: 'https://grep.app/?q=TARGET_QUERY', name: 'Grep.app' },
+        'external-searchcode': { url: 'https://searchcode.com/?q=TARGET_QUERY', name: 'Searchcode' },
+        'external-grayhat': { url: 'https://buckets.grayhatwarfare.com/files?keywords=TARGET_QUERY', name: 'Grayhat Warfare' },
+        'external-dehashed': { url: 'https://www.dehashed.com/search?query=domain%3ATARGET_QUERY', name: 'Dehashed' },
+        'external-haveibeenpwned': { url: 'https://haveibeenpwned.com/', name: 'HaveIBeenPwned' },
+        'external-wayback': { url: 'https://web.archive.org/web/*/TARGET_QUERY', name: 'Waybackurls' },
+        'external-urlscan': { url: 'https://urlscan.io/search/#TARGET_QUERY', name: 'urlscan.io' },
+        'external-builtwith': { url: 'https://builtwith.com/?TARGET_QUERY', name: 'BuiltWith' },
+        'external-publicwww': { url: 'https://publicwww.com/websites/%22TARGET_QUERY%22/', name: 'PublicWWW' },
+        'external-hunter': { url: 'https://hunter.io/search?domain=TARGET_QUERY', name: 'Hunter.io' },
+        'external-emailrep': { url: 'https://emailrep.io/', name: 'EmailRep.io' },
+        'external-linkedin': { url: 'https://www.google.com/search?q=site:linkedin.com/in "TARGET_QUERY"', name: 'LinkedIn Search' },
+        'external-crunchbase': { url: 'https://www.crunchbase.com/textsearch?q=TARGET_QUERY', name: 'Crunchbase' },
+        'external-greynoise': { url: 'https://viz.greynoise.io/query?gnql=TARGET_QUERY', name: 'GreyNoise' },
+        'external-whatsmynameweb': { url: 'https://whatsmyname.app/?q=TARGET_QUERY', name: 'WhatsMyName' },
+        'external-truecaller': { url: 'https://www.truecaller.com/search/in/TARGET_QUERY', name: 'Truecaller' },
+        'external-syncme': { url: 'https://sync.me/search/?number=TARGET_QUERY', name: 'Sync.me' },
+        'external-yandex': { url: 'https://yandex.com/search/?text=TARGET_QUERY', name: 'Yandex' },
+        'external-ahmia': { url: 'https://ahmia.fi/search/?q=TARGET_QUERY', name: 'Ahmia.fi' }
       };
+
+      // --- Core Functions ---
+      const getActiveTarget = () => targetInput.value.trim();
 
       const handleMissingTarget = () => {
-          const { element } = getActiveTarget();
           errorMessage.textContent = 'ERROR: Target required for this action.';
           errorMessage.classList.remove('hidden');
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('shake-error');
-          setTimeout(() => {
-              element.classList.remove('shake-error');
-          }, 820); // Duration of the shake animation
+          targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetInput.classList.add('shake-error');
+          setTimeout(() => targetInput.classList.remove('shake-error'), 820);
       };
-      
-      const addHistoryEntry = (action, target, note = '') => {
-          const timestamp = new Date();
-          const entry = {
-              id: timestamp.getTime(),
-              time: timestamp.toLocaleTimeString(),
-              action,
-              target,
-              note
-          };
-          history.unshift(entry);
-          if (history.length > 50) history.pop(); // Limit history size
-          localStorage.setItem('nexusReconHistory', JSON.stringify(history));
-          renderHistory();
-      };
-      
-      const renderHistory = () => {
-          if (!historyContainer) return;
-          historyContainer.innerHTML = '';
-          if (history.length === 0) {
-              historyContainer.innerHTML = '<p class="text-gray-500 italic">// No activity yet...</p>';
-              return;
-          }
-          history.forEach(entry => {
-              const entryEl = document.createElement('div');
-              entryEl.className = 'bg-black/30 p-3 rounded-md border border-fuchsia-500/30';
-              entryEl.innerHTML = `
-                  <div class="flex justify-between items-center">
-                      <p class="text-sm"><span class="text-gray-500">[${entry.time}]</span> Used <span class="text-fuchsia-400">${entry.action}</span> on <span class="text-cyan-400">${entry.target}</span></p>
-                  </div>
-                  <textarea class="note-input w-full mt-2 p-2 text-xs rounded-md bg-black/50 border-fuchsia-500/50" data-id="${entry.id}" placeholder="// Add notes...">${entry.note}</textarea>
-              `;
-              historyContainer.appendChild(entryEl);
-          });
-      };
-
-      if (historyContainer) {
-        historyContainer.addEventListener('change', (e) => {
-            if (e.target.classList.contains('note-input')) {
-                const entryId = Number(e.target.dataset.id);
-                const entry = history.find(item => item.id === entryId);
-                if (entry) {
-                    entry.note = e.target.value;
-                    localStorage.setItem('nexusReconHistory', JSON.stringify(history));
-                }
-            }
-        });
-      }
-
-      if (clearHistoryBtn) {
-        clearHistoryBtn.addEventListener('click', () => {
-            history = [];
-            localStorage.removeItem('nexusReconHistory');
-            renderHistory();
-        });
-      }
-
-      const executeDork = (event) => {
-        if (event.target.classList.contains('copy-btn')) return;
-        const { value: domain } = getActiveTarget();
-        if (!domain) {
-          handleMissingTarget();
-          return;
-        }
-        errorMessage.classList.add('hidden');
-        const dorkButton = event.currentTarget.querySelector('button[data-dork]');
-        const dorkTemplate = dorkButton.getAttribute('data-dork');
-        if (dorkTemplate) {
-          const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
-          addHistoryEntry(`Dork: ${dorkButton.textContent.trim()}`, domain);
-          window.open(`https://www.google.com/search?q=${encodeURIComponent(finalDork)}`, '_blank');
-        }
-      };
-
-      const copyDork = (copyBtn) => {
-        const { value: domain } = getActiveTarget();
-        if (!domain) {
-          handleMissingTarget();
-          return;
-        }
-        errorMessage.classList.add('hidden');
-        const dorkBtn = copyBtn.closest('.dork-item').querySelector('button[data-dork]');
-        const dorkTemplate = dorkBtn.getAttribute('data-dork');
-        const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, domain);
-        
-        const textArea = document.createElement('textarea');
-        textArea.value = finalDork;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            copyBtn.textContent = 'Copied!';
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-            copyBtn.textContent = 'Error!';
-        }
-        document.body.removeChild(textArea);
-
-        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-      };
-
-      dorkItems.forEach(item => {
-        item.addEventListener('click', executeDork);
-        
-        const copyButton = item.querySelector('.copy-btn');
-        if (copyButton) {
-            copyButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                copyDork(copyButton);
-            });
-        }
-      });
-
-      if (clearButton) {
-        clearButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const { element } = getActiveTarget();
-          element.value = '';
-          errorMessage.classList.add('hidden');
-        });
-      }
 
       const typeEffect = (element, text, speed = 50, callback) => {
         element.textContent = "";
@@ -777,258 +781,30 @@
         }, speed);
       };
 
-      // --- Automated Profiler Logic ---
-      const runProfiler = () => {
-          const { value: target } = getActiveTarget();
-          if (!target) {
-              handleMissingTarget();
-              return;
-          }
-          addHistoryEntry('Automated Profiler', target);
-          errorMessage.classList.add('hidden');
-          profilerResultsContainer.classList.remove('hidden');
-          profilerResultsList.innerHTML = ''; // Clear previous results
-
-          const profilerDorks = [
-              { name: 'Subdomain Scan', dork: 'site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN' },
-              { name: 'Login Portals', dork: 'site:TARGET_DOMAIN inurl:login | inurl:signin' },
-              { name: 'Config Files', dork: 'site:TARGET_DOMAIN ext:xml | ext:conf | ext:ini | ext:log' },
-              { name: 'Public Cloud Buckets', dork: 'site:s3.amazonaws.com "TARGET_DOMAIN"' },
-              { name: 'Exposed Docs', dork: 'site:TARGET_DOMAIN ext:pdf | ext:docx "confidential"' }
-          ];
-
-          typeEffect(profilerStatus, `>> Profile for [${target}] complete:`, 30, () => {
-              profilerDorks.forEach((item, index) => {
-                  setTimeout(() => {
-                      const finalDork = item.dork.replace(/TARGET_DOMAIN/g, target);
-                      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
-                      
-                      const resultItem = document.createElement('div');
-                      resultItem.className = 'flex justify-between items-center';
-                      resultItem.innerHTML = `
-                          <span>- ${item.name}.......</span>
-                          <a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ View Results ]</a>
-                      `;
-                      profilerResultsList.appendChild(resultItem);
-                  }, index * 100); // Staggered appearance
-              });
-          });
-      };
-
-      if (initiateProfileBtn) initiateProfileBtn.addEventListener('click', runProfiler);
-      
-      // --- Favicon Pivot Logic ---
-      if (faviconPivotBtn) {
-        faviconPivotBtn.addEventListener('click', () => {
-            const { value: target } = getActiveTarget();
-            if (!target) {
-                handleMissingTarget();
-                return;
-            }
-            addHistoryEntry('Favicon Pivot', target);
-            const shodanDork = `http.html:"${target}"`;
-            const shodanUrl = `https://www.shodan.io/search?query=${encodeURIComponent(shodanDork)}`;
-            window.open(shodanUrl, '_blank');
-        });
-      }
-
-      // --- Tech Stack Identifier Logic ---
-      const identifyTechStack = () => {
-          const { value: target } = getActiveTarget();
-          if (!target) {
-              handleMissingTarget();
-              return;
-          }
-          addHistoryEntry('Tech-Stack Identifier', target);
-          techResultsContainer.classList.remove('hidden');
-          techResultsList.innerHTML = '';
-
-          const techDorks = [
-              { name: 'WordPress', dork: 'site:TARGET_DOMAIN inurl:wp-content | inurl:wp-admin' },
-              { name: 'Joomla', dork: 'site:TARGET_DOMAIN intext:"Powered by Joomla"' },
-              { name: 'Drupal', dork: 'site:TARGET_DOMAIN intext:"Powered by Drupal"' },
-              { name: 'Shopify', dork: 'site:TARGET_DOMAIN inurl:myshopify.com' },
-              { name: 'Apache Struts', dork: 'site:TARGET_DOMAIN filetype:action | filetype:do' },
-              { name: 'Adobe AEM', dork: 'site:TARGET_DOMAIN inurl:/content/dam' }
-          ];
-
-          typeEffect(techStatus, `>> Tech stack scan for [${target}] complete:`, 30, () => {
-              techDorks.forEach((tech, index) => {
-                  setTimeout(() => {
-                      const finalDork = tech.dork.replace(/TARGET_DOMAIN/g, target);
-                      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
-                      
-                      const resultItem = document.createElement('div');
-                      resultItem.className = 'flex justify-between items-center';
-                      resultItem.innerHTML = `
-                          <span>- ${tech.name}.......</span>
-                          <a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ Check ]</a>
-                      `;
-                      techResultsList.appendChild(resultItem);
-                  }, index * 100);
-              });
-          });
+      // --- History Functions ---
+      const addHistoryEntry = (action, target, note = '') => {
+          const entry = { id: Date.now(), time: new Date().toLocaleTimeString(), action, target, note };
+          history.unshift(entry);
+          if (history.length > 50) history.pop();
+          localStorage.setItem('nexusReconHistory', JSON.stringify(history));
+          renderHistory();
       };
       
-      if (identifyTechBtn) identifyTechBtn.addEventListener('click', identifyTechStack);
-
-      // --- External Recon Logic ---
-      const openExternalTool = (urlTemplate, toolName) => {
-        const { value: target } = getActiveTarget();
-        if(!target) {
-          handleMissingTarget();
-          return;
-        }
-        addHistoryEntry(toolName, target);
-        let query = target;
-        // Special handling for FOFA which requires base64
-        if (urlTemplate.includes('FOFA_B64_QUERY')) {
-            query = btoa(`domain="${target}"`);
-            urlTemplate = urlTemplate.replace('FOFA_B64_QUERY', query);
-        } else {
-            urlTemplate = urlTemplate.replace('TARGET_QUERY', encodeURIComponent(query));
-        }
-        window.open(urlTemplate, '_blank');
+      const renderHistory = () => {
+          if (!historyContainer) return;
+          historyContainer.innerHTML = history.length === 0 
+              ? '<p class="text-gray-500 italic">// No activity yet...</p>'
+              : history.map(entry => `
+                  <div class="bg-black/30 p-3 rounded-md border border-fuchsia-500/30">
+                    <p class="text-sm"><span class="text-gray-500">[${entry.time}]</span> Used <span class="text-fuchsia-400">${entry.action}</span> on <span class="text-cyan-400">${entry.target}</span></p>
+                    <textarea class="note-input w-full mt-2 p-2 text-xs rounded-md bg-black/50 border-fuchsia-500/50" data-id="${entry.id}" placeholder="// Add notes...">${entry.note}</textarea>
+                  </div>
+                `).join('');
       };
 
-      for (const [id, tool] of Object.entries(externalButtons)) {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', () => openExternalTool(tool.url, tool.name));
-        }
-      }
-
-      // --- Dorking Modules Toggle Logic ---
-      if (toggleDorkingBtn) {
-        toggleDorkingBtn.addEventListener('click', () => {
-            const wasHidden = dorkingContainer.classList.contains('hidden');
-            dorkingContainer.classList.toggle('hidden');
-            
-            if (wasHidden) {
-                toggleDorkingBtn.textContent = '[ Hide Google Dorking Modules ]';
-                // Scroll to the container after a tiny delay to ensure it's rendered
-                setTimeout(() => {
-                    dorkingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100); 
-            } else {
-                toggleDorkingBtn.textContent = '[ Show Google Dorking Modules ]';
-            }
-        });
-      }
-
-      // --- Gemini AI Dork Generation Logic ---
-      const generateAiDork = async () => {
-          const { value: domain } = getActiveTarget();
-          const userRequest = aiPromptInput.value.trim();
-          if (!domain || !userRequest) {
-              handleMissingTarget();
-              if (domain && !userRequest) {
-                  errorMessage.textContent = 'ERROR: AI request description is missing.';
-              }
-              return;
-          }
-          generateAiDorkBtn.disabled = true;
-          aiLoadingMessage.classList.remove('hidden');
-          aiResultContainer.classList.add('hidden');
-          errorMessage.classList.add('hidden');
-
-          const prompt = `You are an expert security researcher specializing in Google Dorking for bug bounty hunting. Your task is to generate a single, precise, and effective Google Dork query.
-Rules:
-- The output must be ONLY the dork query itself.
-- Do not include any explanations, introductory text, or markdown formatting like \`\`\`.
-- The dork must be tailored to the user's request and the specified target. The target can be a domain or a company name.
-- Use advanced operators like site:, inurl:, intitle:, filetype:, ext:, etc., where appropriate.
-- If the user asks for something general like "vulnerabilities", create a dork for a common, high-impact finding like exposed config files or sensitive documents.
-
-Target: "${domain}"
-User's Request: "${userRequest}"
-
-Generate the Google Dork:`;
-
-          const maxRetries = 3;
-          for (let attempt = 0; attempt < maxRetries; attempt++) {
-              try {
-                  const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                  const apiKey = ""; 
-                  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                  
-                  const response = await fetch(apiUrl, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(payload)
-                  });
-
-                  if (!response.ok) {
-                      if (response.status >= 400 && response.status < 500) {
-                          console.error(`Client error: ${response.status}. Not retrying.`);
-                          throw new Error(`API request failed with status ${response.status}`);
-                      }
-                      throw new Error(`API request failed with server error: ${response.status}`);
-                  }
-
-                  const result = await response.json();
-
-                  if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
-                      const generatedDork = result.candidates[0].content.parts[0].text.trim();
-                      aiResultContainer.classList.remove('hidden');
-                      typeEffect(aiDorkOutput, generatedDork, 30);
-                      generateAiDorkBtn.disabled = false;
-                      aiLoadingMessage.classList.add('hidden');
-                      addHistoryEntry('AI Dork Generation', domain, `Request: ${userRequest}`);
-                      return; 
-                  } else {
-                      throw new Error('Invalid response structure from API.');
-                  }
-
-              } catch (error) {
-                  console.error(`Attempt ${attempt + 1} failed:`, error.message);
-                  if (attempt + 1 >= maxRetries) {
-                      aiDorkOutput.textContent = 'ERROR: AI service unavailable. Please try again later.';
-                      aiResultContainer.classList.remove('hidden');
-                  } else {
-                      const delay = Math.pow(2, attempt) * 1000;
-                      await new Promise(res => setTimeout(res, delay));
-                  }
-              }
-          }
-          
-          generateAiDorkBtn.disabled = false;
-          aiLoadingMessage.classList.add('hidden');
-      };
-
-      if (generateAiDorkBtn) generateAiDorkBtn.addEventListener('click', generateAiDork);
-
-      if (copyAiDorkBtn) {
-        copyAiDorkBtn.addEventListener('click', () => {
-            const dorkToCopy = aiDorkOutput.textContent;
-            const textArea = document.createElement('textarea');
-            textArea.value = dorkToCopy;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                copyAiDorkBtn.textContent = 'Copied!';
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                copyAiDorkBtn.textContent = 'Error!';
-            }
-            document.body.removeChild(textArea);
-            setTimeout(() => copyAiDorkBtn.textContent = 'Copy', 1500);
-        });
-      }
-
-      if (searchAiDorkBtn) {
-        searchAiDorkBtn.addEventListener('click', () => {
-            const dorkToSearch = aiDorkOutput.textContent;
-            if (dorkToSearch) {
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(dorkToSearch)}`, '_blank');
-            }
-        });
-      }
-      
-      // --- Workspace Logic ---
+      // --- Workspace Functions ---
       const saveWorkspaceData = () => {
-          const { value: target } = getActiveTarget();
+          const target = getActiveTarget();
           if (!target) return;
           const data = {
               subdomains: workspaceSubdomains.value,
@@ -1041,7 +817,7 @@ Generate the Google Dork:`;
       };
 
       const loadWorkspaceData = () => {
-          const { value: target } = getActiveTarget();
+          const target = getActiveTarget();
           const data = JSON.parse(localStorage.getItem(`nexusWorkspace_${target}`)) || {};
           workspaceSubdomains.value = data.subdomains || '';
           workspaceEmails.value = data.emails || '';
@@ -1050,49 +826,298 @@ Generate the Google Dork:`;
           workspaceNotes.value = data.notes || '';
       };
 
-      if (targetInput) targetInput.addEventListener('input', loadWorkspaceData);
-      workspaceElements.forEach(el => {
-          if (el) el.addEventListener('input', saveWorkspaceData);
-      });
-      
-      if (clearWorkspaceBtn) {
-        clearWorkspaceBtn.addEventListener('click', () => {
-            const { value: target } = getActiveTarget();
-            if (target) {
-                localStorage.removeItem(`nexusWorkspace_${target}`);
-                loadWorkspaceData(); // This will clear the fields
-            }
-        });
-      }
+      // --- Recon Mode Switching ---
+      const setReconMode = (mode) => {
+          reconModeTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+          targetInput.placeholder = mode === 'website' 
+              ? 'Enter Domain or Company...' 
+              : 'Enter Username, Email, or Phone...';
 
-      // --- Recon Mode Switching Logic ---
+          document.querySelectorAll('[data-recon-type]').forEach(module => {
+              const type = module.dataset.reconType;
+              module.style.display = (type === 'all' || type === mode) ? '' : 'none';
+          });
+      };
+
+      // --- Dork & Tool Execution ---
+      const executeDork = (dorkTemplate, actionName) => {
+        const target = getActiveTarget();
+        if (!target) {
+          handleMissingTarget();
+          return;
+        }
+        errorMessage.classList.add('hidden');
+        const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, target);
+        addHistoryEntry(actionName, target);
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalDork)}`, '_blank');
+      };
+
+      const copyDork = (dorkTemplate, copyBtn) => {
+        const target = getActiveTarget();
+        if (!target) {
+          handleMissingTarget();
+          return;
+        }
+        errorMessage.classList.add('hidden');
+        const finalDork = dorkTemplate.replace(/TARGET_DOMAIN/g, target);
+        
+        navigator.clipboard.writeText(finalDork).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          copyBtn.style.backgroundColor = '#ff00c1'; // Magenta feedback
+          copyBtn.style.borderColor = '#ff00c1';
+          setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.style.backgroundColor = '';
+              copyBtn.style.borderColor = '';
+          }, 1500);
+        }).catch(err => {
+          console.error('Failed to copy text: ', err);
+          copyBtn.textContent = 'Error!';
+          setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+        });
+      };
+
+      const openExternalTool = (urlTemplate, toolName) => {
+        const target = getActiveTarget();
+        if(!target) {
+          handleMissingTarget();
+          return;
+        }
+        addHistoryEntry(toolName, target);
+        let finalUrl = urlTemplate;
+        if (urlTemplate.includes('FOFA_B64_QUERY')) {
+            const query = btoa(`domain="${target}"`);
+            finalUrl = urlTemplate.replace('FOFA_B64_QUERY', query);
+        } else {
+            finalUrl = urlTemplate.replace(/TARGET_QUERY/g, encodeURIComponent(target));
+        }
+        window.open(finalUrl, '_blank');
+      };
+      
+      // --- EVENT DELEGATION ---
+      document.body.addEventListener('click', (e) => {
+          const target = e.target;
+          const targetId = target.id;
+          
+          // Sidebar Toggle
+          if (target.closest('#sidebar-toggle')) {
+              sidebar.classList.add('open');
+          }
+          if (target.closest('#sidebar-close')) {
+              sidebar.classList.remove('open');
+          }
+
+          // Dork Items
+          const dorkItem = target.closest('.dork-item');
+          if (dorkItem) {
+              const dorkButton = dorkItem.querySelector('button[data-dork]');
+              const copyButton = dorkItem.querySelector('.copy-btn');
+              if (target.closest('.copy-btn')) {
+                  copyDork(dorkButton.dataset.dork, copyButton);
+              } else {
+                  executeDork(dorkButton.dataset.dork, dorkButton.textContent.trim());
+              }
+          }
+
+          // External Tools
+          if (target.closest('.dork-grid button[id^="external-"]')) {
+              const toolData = externalButtonsData[target.id];
+              if (toolData) {
+                  openExternalTool(toolData.url, toolData.name);
+              }
+          }
+
+          // Other buttons by ID
+          switch(targetId) {
+              case 'clear-target':
+                  targetInput.value = '';
+                  errorMessage.classList.add('hidden');
+                  loadWorkspaceData();
+                  break;
+              case 'initiate-profile':
+                  const profilerTarget = getActiveTarget();
+                  if (!profilerTarget) { handleMissingTarget(); return; }
+                  addHistoryEntry('Automated Profiler', profilerTarget);
+                  profilerResultsContainer.classList.remove('hidden');
+                  profilerResultsList.innerHTML = '';
+                  profilerStatus.textContent = `>> Scanning [${profilerTarget}]... Stand by...`;
+                  const profilerDorks = [
+                      { name: 'Subdomain Scan', dork: 'site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN' },
+                      { name: 'Login Portals', dork: 'site:TARGET_DOMAIN inurl:login | inurl:signin' },
+                      { name: 'Config Files', dork: 'site:TARGET_DOMAIN ext:xml | ext:conf | ext:ini | ext:log' },
+                      { name: 'Public Cloud Buckets', dork: 'site:s3.amazonaws.com "TARGET_DOMAIN"' },
+                      { name: 'Exposed Docs', dork: 'site:TARGET_DOMAIN ext:pdf | ext:docx "confidential"' }
+                  ];
+                  setTimeout(() => {
+                    typeEffect(profilerStatus, `>> Profile for [${profilerTarget}] complete:`, 30, () => {
+                        profilerDorks.forEach((item, index) => {
+                            setTimeout(() => {
+                                const finalDork = item.dork.replace(/TARGET_DOMAIN/g, profilerTarget);
+                                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                                profilerResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${item.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ View Results ]</a></div>`;
+                            }, index * 100);
+                        });
+                    });
+                  }, 1000);
+                break;
+              case 'identify-tech':
+                  const techTarget = getActiveTarget();
+                  if (!techTarget) { handleMissingTarget(); return; }
+                  addHistoryEntry('Tech-Stack Identifier', techTarget);
+                  techResultsContainer.classList.remove('hidden');
+                  techResultsList.innerHTML = '';
+                  techStatus.textContent = `>> Identifying tech for [${techTarget}]...`;
+                  const techDorks = [
+                      { name: 'WordPress', dork: 'site:TARGET_DOMAIN inurl:wp-content | inurl:wp-admin' },
+                      { name: 'Joomla', dork: 'site:TARGET_DOMAIN intext:"Powered by Joomla"' },
+                      { name: 'Drupal', dork: 'site:TARGET_DOMAIN intext:"Powered by Drupal"' },
+                      { name: 'Shopify', dork: 'site:TARGET_DOMAIN inurl:myshopify.com' },
+                      { name: 'Apache Struts', dork: 'site:TARGET_DOMAIN filetype:action | filetype:do' },
+                      { name: 'Adobe AEM', dork: 'site:TARGET_DOMAIN inurl:/content/dam' }
+                  ];
+                  setTimeout(() => {
+                    typeEffect(techStatus, `>> Tech stack scan for [${techTarget}] complete:`, 30, () => {
+                        techDorks.forEach((tech, index) => {
+                            setTimeout(() => {
+                                const finalDork = tech.dork.replace(/TARGET_DOMAIN/g, techTarget);
+                                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                                techResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${tech.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ Check ]</a></div>`;
+                            }, index * 100);
+                        });
+                    });
+                  }, 1000);
+                break;
+              case 'favicon-pivot':
+                  openExternalTool('https://www.shodan.io/search?query=http.html:"TARGET_QUERY"', 'Favicon Pivot');
+                  break;
+              case 'toggle-dorking-modules':
+                  const isHidden = dorkingContainer.classList.toggle('hidden');
+                  target.textContent = isHidden ? '[ Show Google Dorking Modules ]' : '[ Hide Google Dorking Modules ]';
+                  if(!isHidden) setTimeout(() => dorkingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                  break;
+              case 'clear-workspace':
+                  const currentTarget = getActiveTarget();
+                  if (currentTarget) {
+                      localStorage.removeItem(`nexusWorkspace_${currentTarget}`);
+                      loadWorkspaceData();
+                  }
+                  break;
+              case 'clear-history':
+                  history = [];
+                  localStorage.removeItem('nexusReconHistory');
+                  renderHistory();
+                  break;
+          }
+      });
+
+      // --- Individual Listeners for Non-Delegated Actions ---
+      
+      // Recon Mode Tabs
       reconModeTabs.forEach(tab => {
           tab.addEventListener('click', () => {
-              reconModeTabs.forEach(t => t.classList.remove('active'));
-              tab.classList.add('active');
-              
-              const mode = tab.dataset.mode;
-              if (mode === 'website') {
-                  targetInput.placeholder = 'Enter Domain or Company...';
-              } else {
-                  targetInput.placeholder = 'Enter Username, Email, or Phone...';
-              }
+              setReconMode(tab.dataset.mode);
+              loadWorkspaceData();
+          });
+      });
 
-              reconModules.forEach(module => {
-                  const type = module.dataset.reconType;
-                  if (type === 'all' || type === mode) {
-                      module.style.display = '';
-                  } else {
-                      module.style.display = 'none';
-                  }
-              });
-              loadWorkspaceData(); // Load data for the new active target
+      // Target Input
+      targetInput.addEventListener('change', loadWorkspaceData);
+
+      // Workspace & History textareas
+      workspaceElements.forEach(el => el.addEventListener('blur', saveWorkspaceData));
+      historyContainer.addEventListener('change', (e) => {
+          if (e.target.classList.contains('note-input')) {
+              const entry = history.find(item => item.id === Number(e.target.dataset.id));
+              if (entry) {
+                  entry.note = e.target.value;
+                  localStorage.setItem('nexusReconHistory', JSON.stringify(history));
+              }
+          }
+      });
+
+      // --- Initial Page Load ---
+      mainContainer.classList.add('content-hidden');
+      agreeBtn.addEventListener('click', () => {
+          disclaimerModal.style.display = 'none';
+          mainContainer.classList.remove('content-hidden');
+          
+          // Initialize Live2D Widget AFTER user agrees
+          try {
+            L2Dwidget.init({
+                "model": { "jsonPath": "https://cdn.jsdelivr.net/npm/live2d-widget-model-tororo@1.0.5/assets/tororo.model.json" },
+                "display": { "position": "right", "width": 200, "height": 400, "hOffset": -50, "vOffset": -100 },
+                "mobile": { "show": true, "scale": 0.5, "hOffset": -20, "vOffset": -40 },
+                "dialog": { "enable": true, "script": { 'tap body': 'Hey! Stop that!' } },
+                "react": { "opacityDefault": 0.85, "opacityOnHover": 1 },
+                "eyeTrack": true,
+            });
+          } catch(e) {
+            console.error("Live2D widget failed to load:", e);
+          }
+      });
+
+      renderHistory();
+      loadWorkspaceData();
+      setReconMode('website');
+      
+        // --- Cursor and Trail Logic ---
+      const cursor = document.querySelector('.cursor');
+      let mouseX = 0;
+      let mouseY = 0;
+      let lastTrailTime = 0;
+      const trailDelay = 50; 
+
+      function updateCursor() {
+          cursor.style.left = `${mouseX}px`;
+          cursor.style.top = `${mouseY}px`;
+          requestAnimationFrame(updateCursor);
+      }
+
+      document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          const currentTime = Date.now();
+          if (currentTime - lastTrailTime > trailDelay) {
+              createTrail(e.clientX, e.clientY);
+              lastTrailTime = currentTime;
+          }
+      });
+
+      function createTrail(x, y) {
+          const trail = document.createElement('span');
+          trail.className = 'trail';
+          trail.innerText = Math.random() < 0.5 ? '0' : '1';
+          trail.style.left = `${x}px`;
+          trail.style.top = `${y}px`;
+          document.body.appendChild(trail);
+          trail.addEventListener('animationend', () => {
+              trail.remove();
+          });
+      }
+      
+      requestAnimationFrame(updateCursor);
+
+      // --- Click Ripple Animation ---
+      document.addEventListener('click', (e) => {
+          // Don't fire on scrollbar clicks
+          if (e.clientX >= document.documentElement.clientWidth || e.clientY >= document.documentElement.clientHeight) {
+              return;
+          }
+          
+          const ripple = document.createElement('div');
+          ripple.className = 'click-effect';
+          document.body.appendChild(ripple);
+
+          ripple.style.top = `${e.clientY}px`;
+          ripple.style.left = `${e.clientX}px`;
+
+          // Clean up the element after the animation is done to prevent DOM clutter
+          ripple.addEventListener('animationend', () => {
+              ripple.remove();
           });
       });
       
-      // Initial render of history and workspace on load
-      renderHistory();
-      loadWorkspaceData();
     });
   </script>
 
