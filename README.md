@@ -1,5 +1,7 @@
 # So, You Think You Can Recon? Enter NexusRecon.
 
+### [Live Demo](https://anupamjaiswall.github.io/NexusRecon/)
+
 Let's be real. You're deep into a recon session. You have 37 tabs open, you've manually typed `site:target.com inurl:login` for the hundredth time, and you're starting to forget what the sun looks like. We've all been there.
 
 That's exactly why NexusRecon was born. I was tired of the digital juggling act. This project started as a personal mission to build a centralized, cyberpunk-themed command center to automate the boring stuff and get straight to the good stuff.
