@@ -9,6 +9,22 @@
   <!-- Cyberpunk Favicon -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%230a0a1a;stroke:%2300ffdd;stroke-miterlimit:10;stroke-width:3px;%7D.cls-2%7Bfill:%23ff00c1;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M50,5A45,45,0,1,1,5,50,45,45,0,0,1,50,5Z'/%3E%3Ccircle class='cls-2' cx='50' cy='50' r='15'/%3E%3Cpath class='cls-1' d='M25,50a25,25,0,0,1,50,0'/%3E%3C/svg%3E" type="image/svg+xml">
   <style>
+    :root {
+        --primary-color: #00ffdd;
+        --accent-color: #ff00c1;
+        --bg-color: #0a0a1a;
+        --text-glow-color: rgba(0, 255, 221, 0.4);
+        --grid-color: rgba(0, 221, 255, 0.1);
+    }
+
+    body.theme-matrix {
+        --primary-color: #00ff41;
+        --accent-color: #00ff41;
+        --bg-color: #000;
+        --text-glow-color: rgba(0, 255, 65, 0.4);
+        --grid-color: rgba(0, 255, 65, 0.1);
+    }
+    
     @keyframes grid-pan {
       0% { background-position: 0% 0%; }
       100% { background-position: 100% 100%; }
@@ -16,17 +32,20 @@
 
     body {
       font-family: 'Fira Code', monospace;
-      background-color: #0a0a1a; /* Dark blue-black */
-      color: #00ffdd; /* Bright Cyan */
+      background-color: var(--bg-color);
+      color: var(--primary-color);
       overflow-x: hidden;
-      /* Cyberpunk grid background */
       background-image: 
-        linear-gradient(to right, rgba(0, 221, 255, 0.1) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 221, 255, 0.1) 1px, transparent 1px);
+        linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
       background-size: 40px 40px;
       animation: grid-pan 120s linear infinite;
-      cursor: none; /* Hide the default cursor */
-      text-shadow: 0 0 3px rgba(0, 255, 221, 0.4); /* Accessibility: Contrast */
+      cursor: none;
+      text-shadow: 0 0 3px var(--text-glow-color);
+    }
+
+    body.no-grid-animation {
+        animation: none;
     }
     
     a, button, .copy-btn, .hacker-btn {
@@ -35,335 +54,121 @@
 
     .hacker-container {
         position: relative;
-        border: 1px solid #ff00c1; /* Magenta */
-        box-shadow: 0 0 15px rgba(255, 0, 193, 0.3), inset 0 0 10px rgba(255, 0, 193, 0.15);
+        border: 1px solid var(--accent-color);
+        box-shadow: 0 0 15px var(--accent-color-translucent, rgba(255, 0, 193, 0.3)), inset 0 0 10px var(--accent-color-translucent-inner, rgba(255, 0, 193, 0.15));
         background-color: rgba(10, 10, 26, 0.85);
         backdrop-filter: blur(8px);
     }
 
-    /* HUD Corner Brackets */
     .hacker-container::before, .hacker-container::after,
     .hacker-container > :first-child::before, .hacker-container > :first-child::after {
         content: '';
         position: absolute;
         width: 20px;
         height: 20px;
-        border-color: #00ffdd; /* Bright Cyan */
+        border-color: var(--primary-color);
         border-style: solid;
         transition: all 0.3s ease;
     }
     .hacker-container:hover::before, .hacker-container:hover::after,
     .hacker-container:hover > :first-child::before, .hacker-container:hover > :first-child::after {
-        border-color: #ff00c1;
+        border-color: var(--accent-color);
     }
     .hacker-container::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
     .hacker-container::after { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
     .hacker-container > :first-child::before { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
     .hacker-container > :first-child::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
 
-
     .glitch {
-      font-weight: 700;
-      position: relative;
-      color: #00ffdd;
-      text-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
-      animation: glitch-animation 5s infinite linear alternate-reverse;
+        position: relative;
+        font-weight: 700;
+        color: #c0c0c0;
+        letter-spacing: 0.1em;
+        animation: glitch-main 12s infinite linear alternate;
+        text-shadow: 
+            0 0 1px #fff,
+            0 0 5px #00aaff,
+            0 0 10px #00aaff,
+            0 0 20px #9900ff,
+            0 0 30px #9900ff,
+            0 0 40px var(--accent-color),
+            0 0 55px var(--accent-color);
+    }
+    
+    body.no-logo-animation .glitch {
+        animation: none;
+    }
+    body.no-logo-animation .glitch::before,
+    body.no-logo-animation .glitch::after {
+        display: none;
     }
 
     .glitch::before,
     .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0a0a1a;
-      overflow: hidden;
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
     }
 
     .glitch::before {
-      left: 3px;
-      text-shadow: -3px 0 #ff00c1; /* Magenta */
-      animation: glitch-before 7s infinite linear alternate-reverse;
+        left: 2px;
+        text-shadow: -2px 0 var(--accent-color);
+        animation: glitch-before 12s infinite linear alternate;
     }
 
     .glitch::after {
-      left: -3px;
-      text-shadow: -3px 0 #00ff41; /* Green */
-      animation: glitch-after 3s infinite linear alternate-reverse;
+        left: -2px;
+        text-shadow: -2px 0 #00aaff, 2px 2px #9900ff;
+        animation: glitch-after 12s infinite linear alternate;
     }
 
-    @keyframes glitch-animation { 0% { clip-path: inset(23% 0 34% 0); } 100% { clip-path: inset(72% 0 15% 0); } }
-    @keyframes glitch-before { 0% { clip-path: inset(0 0 100% 0); } 100% { clip-path: inset(90% 0 3% 0); } }
-    @keyframes glitch-after { 0% { clip-path: inset(100% 0 0 0); } 100% { clip-path: inset(3% 0 90% 0); } }
+    @keyframes glitch-main { 0% { opacity: 1; } 94% { opacity: 1; } 95% { opacity: 0.3; } 96% { opacity: 1; } 98% { opacity: 0.3; } 100% { opacity: 1; } }
+    @keyframes glitch-before { 0% { clip-path: inset(89% -6px 8% 0); transform: skew(0.9deg); } 5% { clip-path: inset(41% -6px 56% 0); transform: skew(0.2deg); } 10% { clip-path: inset(2% -6px 89% 0); transform: skew(0.5deg); } 15% { clip-path: inset(78% -6px 1% 0); transform: skew(0.1deg); } 20% { clip-path: inset(33% -6px 62% 0); transform: skew(0.7deg); } 25% { clip-path: inset(55% -6px 10% 0); transform: skew(0.8deg); } 30% { clip-path: inset(89% -6px 8% 0); transform: skew(0.3deg); } 35% { clip-path: inset(10% -6px 80% 0); transform: skew(0.1deg); } 40% { clip-path: inset(40% -6px 40% 0); transform: skew(0.4deg); } 45% { clip-path: inset(20% -6px 70% 0); transform: skew(0.2deg); } 50% { clip-path: inset(99% -6px 1% 0); transform: skew(0.6deg); } 55% { clip-path: inset(5% -6px 85% 0); transform: skew(0.9deg); } 60% { clip-path: inset(30% -6px 60% 0); transform: skew(0.1deg); } 65% { clip-path: inset(80% -6px 10% 0); transform: skew(0.5deg); } 70% { clip-path: inset(15% -6px 75% 0); transform: skew(0.3deg); } 75% { clip-path: inset(60% -6px 30% 0); transform: skew(0.7deg); } 80% { clip-path: inset(95% -6px 2% 0); transform: skew(0.2deg); } 85% { clip-path: inset(25% -6px 65% 0); transform: skew(0.8deg); } 90% { clip-path: inset(70% -6px 20% 0); transform: skew(0.4deg); } 95% { clip-path: inset(10% -6px 88% 0); transform: skew(0.1deg); } 100% { clip-path: inset(50% -6px 45% 0); transform: skew(0.6deg); } }
+    @keyframes glitch-after { 0% { clip-path: inset(89% 0 8% -6px); transform: skew(-0.9deg); } 5% { clip-path: inset(41% 0 56% -6px); transform: skew(-0.2deg); } 10% { clip-path: inset(2% 0 89% -6px); transform: skew(-0.5deg); } 15% { clip-path: inset(78% 0 1% -6px); transform: skew(-0.1deg); } 20% { clip-path: inset(33% 0 62% -6px); transform: skew(-0.7deg); } 25% { clip-path: inset(55% 0 10% -6px); transform: skew(-0.8deg); } 30% { clip-path: inset(89% 0 8% -6px); transform: skew(-0.3deg); } 35% { clip-path: inset(10% 0 80% -6px); transform: skew(-0.1deg); } 40% { clip-path: inset(40% 0 40% -6px); transform: skew(-0.4deg); } 45% { clip-path: inset(20% 0 70% -6px); transform: skew(-0.2deg); } 50% { clip-path: inset(99% 0 1% -6px); transform: skew(-0.6deg); } 55% { clip-path: inset(5% 0 85% -6px); transform: skew(-0.9deg); } 60% { clip-path: inset(30% 0 60% -6px); transform: skew(-0.1deg); } 65% { clip-path: inset(80% 0 10% -6px); transform: skew(-0.5deg); } 70% { clip-path: inset(15% 0 75% -6px); transform: skew(-0.3deg); } 75% { clip-path: inset(60% 0 30% -6px); transform: skew(-0.7deg); } 80% { clip-path: inset(95% 0 2% -6px); transform: skew(-0.2deg); } 85% { clip-path: inset(25% 0 65% -6px); transform: skew(-0.8deg); } 90% { clip-path: inset(70% 0 20% -6px); transform: skew(-0.4deg); } 95% { clip-path: inset(10% 0 88% -6px); transform: skew(-0.1deg); } 100% { clip-path: inset(50% 0 45% -6px); transform: skew(-0.6deg); } }
 
-    .hacker-input, .note-input, .workspace-textarea, .hacker-select {
-        background-color: rgba(0, 221, 255, 0.05);
-        border: 1px solid #00ffdd;
-        color: #00ffdd;
-        transition: all 0.3s ease;
-    }
-    
-    /* Accessibility: Focus Indicators */
-    .hacker-input:focus, .note-input:focus, .workspace-textarea:focus, .hacker-select:focus {
-        outline: none;
-        box-shadow: 0 0 10px #00ffdd, 0 0 15px #ff00c1;
-        background-color: rgba(0, 221, 255, 0.1);
-    }
-    
-    .hacker-btn:focus-visible, .tab-btn:focus-visible, .dork-item button:focus-visible {
-        outline: none;
-        box-shadow: 0 0 15px #ff00c1, 0 0 5px #ff00c1 inset;
-    }
-
-    .hacker-select option {
-        background-color: #0a0a1a;
-        color: #00ffdd;
-    }
-
-    .hacker-btn {
-      background-color: transparent;
-      border: 1px solid #00ffdd;
-      color: #00ffdd;
-      text-shadow: 0 0 5px #00ffdd;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      will-change: transform;
-    }
-    .hacker-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(0, 221, 255, 0.4), transparent);
-        transition: all 0.5s;
-    }
-    .hacker-btn:hover::before {
-        left: 100%;
-    }
-    .hacker-btn:hover {
-        background-color: #00ffdd;
-        color: #0a0a1a;
-        box-shadow: 0 0 20px #00ffdd;
-    }
-    
-    .category-title {
-        color: #ff00c1;
-        text-shadow: 0 0 8px #ff00c1;
-    }
-    
-    .subcategory-title {
-        color: #00ffdd;
-        text-shadow: 0 0 5px #00ffdd;
-    }
-
-    .dork-item {
-        background-color: transparent;
-        border: 1px solid rgba(255, 0, 193, 0.5);
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    .dork-item:hover {
-        border-color: #ff00c1;
-        box-shadow: 0 0 10px rgba(255, 0, 193, 0.5);
-        transform: translateY(-3px);
-    }
-    .dork-text {
-        color: #00ffdd;
-    }
-    .dork-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 1rem;
-    }
-    
-    @keyframes shake-error-animation {
-      10%, 90% { transform: translateX(-1px); }
-      20%, 80% { transform: translateX(2px); }
-      30%, 50%, 70% { transform: translateX(-4px); }
-      40%, 60% { transform: translateX(4px); }
-    }
-
-    .shake-error {
-      animation: shake-error-animation 0.82s cubic-bezier(.36,.07,.19,.97) both;
-    }
-    
-    .tab-btn {
-        background-color: transparent;
-        border: 1px solid #00ffdd;
-        color: #00ffdd;
-        transition: all 0.3s ease;
-    }
-    .tab-btn.active {
-        background-color: #00ffdd;
-        color: #0a0a1a;
-        box-shadow: 0 0 15px #00ffdd;
-    }
-
-    /* Sidebar Styles */
-    #sidebar {
-        position: fixed;
-        bottom: 1rem;
-        left: 1rem;
-        z-index: 1000;
-        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        pointer-events: none; /* Make container non-interactive by default */
-    }
-    #sidebar.open {
-        pointer-events: auto; /* Make container interactive when open */
-    }
-    #sidebar-toggle {
-        pointer-events: auto; /* Always allow the toggle button to be clicked */
-        transition: all 0.3s ease;
-    }
-    #sidebar-panel {
-        transform: translateX(-120%);
-        opacity: 0;
-        pointer-events: none;
-        width: 90vw;
-        max-width: 500px;
-        max-height: 80vh;
-    }
-    #sidebar.open #sidebar-panel {
-        transform: translateX(0);
-        opacity: 1;
-        pointer-events: auto;
-    }
-    #sidebar.open #sidebar-toggle {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    /* Cyberpunk Live2D Cat Style */
-    #live2d-widget canvas {
-        filter: hue-rotate(220deg) saturate(1.5) drop-shadow(0 0 8px #ff00c1);
-        transition: filter 0.5s ease;
-    }
-    #live2d-widget canvas:hover {
-        filter: hue-rotate(280deg) saturate(2) drop-shadow(0 0 12px #00ffdd);
-    }
-
-    /* Disclaimer Modal Styles */
-    .content-hidden {
-        filter: blur(8px);
-        pointer-events: none;
-        transition: filter 0.3s ease;
-    }
-
-    /* --- Custom Cursor Styling --- */
-    .cursor {
-        width: 30px;
-        height: 30px;
-        border: 2px solid #ff00c1; /* Magenta border */
-        border-radius: 50%;
-        position: fixed; /* Use fixed positioning to stay in the viewport */
-        pointer-events: none; /* Allows clicking through the cursor element */
-        transform: translate(-50%, -50%); /* Center the cursor on the mouse pointer */
-        z-index: 10000; /* Set a very high z-index */
-        transition: transform 0.1s ease-out;
-        box-shadow: 0 0 10px #ff00c1, 0 0 20px #ff00c1, inset 0 0 5px #ff00c1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Create the crosshair effect using pseudo-elements */
-    .cursor::before,
-    .cursor::after {
-        content: '';
-        position: absolute;
-        background-color: #00ffdd; /* Cyan crosshair */
-        box-shadow: 0 0 5px #00ffdd, 0 0 10px #00ffdd;
-    }
-
-    .cursor::before {
-        width: 2px;
-        height: 10px;
-    }
-
-    .cursor::after {
-        width: 10px;
-        height: 2px;
-    }
-    
-    /* --- Cursor Trail Styling --- */
-    .trail {
-        position: fixed;
-        pointer-events: none;
-        z-index: 9999; /* Slightly lower than the cursor itself */
-        color: #00ff41; /* Green matrix glow for the trail */
-        font-size: 1.2rem;
-        text-shadow: 0 0 8px #00ff41;
-        animation: fadeOut 0.8s forwards;
-        transform: translate(-50%, -50%); /* Center the character */
-    }
-
-    /* Animation for the trail to fade and shrink */
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        to {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.5);
-        }
-    }
-
-    /* --- Click Animation Styling --- */
-    .click-effect {
-        width: 80px;
-        height: 80px;
-        border: 2px solid #ff00c1; /* Magenta */
-        border-radius: 50%;
-        position: fixed;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        z-index: 10001; /* Above cursor */
-        opacity: 0; /* Start invisible */
-        animation: click-animation 0.5s ease-out;
-    }
-
-    @keyframes click-animation {
-      0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 1;
-      }
-      80% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0;
-      }
-    }
-
-    /* --- Social Icons Styling --- */
-    .social-icon {
-        color: #00ffdd;
-        transition: all 0.3s ease;
-        filter: drop-shadow(0 0 5px #00ffdd);
-    }
-    .social-icon:hover {
-        color: #ff00c1;
-        transform: scale(1.1) rotate(5deg);
-        filter: drop-shadow(0 0 15px #ff00c1);
-    }
-
-    /* --- Mobile Specific Styles --- */
-    @media (max-width: 768px) {
-      .cursor, .trail {
-        display: none;
-      }
-      body, a, button, .copy-btn, .hacker-btn {
-        cursor: auto;
-      }
-    }
+    .hacker-input, .note-input, .workspace-textarea, .hacker-select { background-color: rgba(0, 221, 255, 0.05); border: 1px solid var(--primary-color); color: var(--primary-color); transition: all 0.3s ease; }
+    .hacker-input:focus, .note-input:focus, .workspace-textarea:focus, .hacker-select:focus { outline: none; box-shadow: 0 0 10px var(--primary-color), 0 0 15px var(--accent-color); background-color: rgba(0, 221, 255, 0.1); }
+    .hacker-btn:focus-visible, .tab-btn:focus-visible, .dork-item button:focus-visible { outline: none; box-shadow: 0 0 15px var(--accent-color), 0 0 5px var(--accent-color) inset; }
+    .hacker-select option { background-color: var(--bg-color); color: var(--primary-color); }
+    .hacker-btn { background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); text-shadow: 0 0 5px var(--primary-color); transition: all 0.3s ease; position: relative; overflow: hidden; will-change: transform; }
+    .hacker-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(120deg, transparent, rgba(0, 221, 255, 0.4), transparent); transition: all 0.5s; }
+    .hacker-btn:hover::before { left: 100%; }
+    .hacker-btn:hover { background-color: var(--primary-color); color: var(--bg-color); box-shadow: 0 0 20px var(--primary-color); }
+    .category-title { color: var(--accent-color); text-shadow: 0 0 8px var(--accent-color); }
+    .subcategory-title { color: var(--primary-color); text-shadow: 0 0 5px var(--primary-color); }
+    .dork-item { border: 1px solid rgba(255, 0, 193, 0.5); transition: all 0.3s ease; position: relative; }
+    .dork-item:hover { border-color: var(--accent-color); box-shadow: 0 0 10px rgba(255, 0, 193, 0.5); transform: translateY(-3px); }
+    .dork-text { color: var(--primary-color); }
+    .dork-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    @keyframes shake-error-animation { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+    .shake-error { animation: shake-error-animation 0.82s cubic-bezier(.36,.07,.19,.97) both; }
+    .tab-btn { background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); transition: all 0.3s ease; }
+    .tab-btn.active { background-color: var(--primary-color); color: var(--bg-color); box-shadow: 0 0 15px var(--primary-color); }
+    #sidebar { position: fixed; bottom: 1rem; left: 1rem; z-index: 1000; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
+    #sidebar.open { pointer-events: auto; }
+    #sidebar-toggle { pointer-events: auto; transition: all 0.3s ease; }
+    #sidebar-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; width: 90vw; max-width: 500px; max-height: 80vh; }
+    #sidebar.open #sidebar-panel { transform: translateX(0); opacity: 1; pointer-events: auto; }
+    #sidebar.open #sidebar-toggle { transform: scale(0); opacity: 0; }
+    #live2d-widget canvas { filter: hue-rotate(220deg) saturate(1.5) drop-shadow(0 0 8px var(--accent-color)); transition: filter 0.5s ease; }
+    #live2d-widget canvas:hover { filter: hue-rotate(280deg) saturate(2) drop-shadow(0 0 12px var(--primary-color)); }
+    .content-hidden { filter: blur(8px); pointer-events: none; transition: filter 0.3s ease; }
+    .cursor { width: 30px; height: 30px; border: 2px solid var(--accent-color); border-radius: 50%; position: fixed; pointer-events: none; transform: translate(-50%, -50%); z-index: 10000; transition: transform 0.1s ease-out; box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), inset 0 0 5px var(--accent-color); display: flex; justify-content: center; align-items: center; }
+    .cursor::before, .cursor::after { content: ''; position: absolute; background-color: var(--primary-color); box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); }
+    .cursor::before { width: 2px; height: 10px; }
+    .cursor::after { width: 10px; height: 2px; }
+    .trail { position: fixed; pointer-events: none; z-index: 9999; color: #00ff41; font-size: 1.2rem; text-shadow: 0 0 8px #00ff41; animation: fadeOut 0.8s forwards; transform: translate(-50%, -50%); }
+    body.no-trail .trail { display: none; }
+    @keyframes fadeOut { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } }
+    .click-effect { width: 80px; height: 80px; border: 2px solid var(--accent-color); border-radius: 50%; position: fixed; pointer-events: none; transform: translate(-50%, -50%); z-index: 10001; opacity: 0; animation: click-animation 0.5s ease-out; }
+    @keyframes click-animation { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 80% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; } }
+    .social-icon { color: var(--primary-color); transition: all 0.3s ease; filter: drop-shadow(0 0 5px var(--primary-color)); }
+    .social-icon:hover { color: var(--accent-color); transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--accent-color)); }
+    @media (max-width: 768px) { .cursor, .trail { display: none; } body, a, button, .copy-btn, .hacker-btn { cursor: auto; } }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-200">
@@ -421,12 +226,12 @@
                 </svg>
             </button>
             <div id="sidebar-panel" class="hacker-container p-6 rounded-lg overflow-y-auto">
-                <button id="sidebar-close" class="absolute top-2 right-2 text-cyan-400 hover:text-red-500">
+                <button id="sidebar-close" class="hacker-btn rounded-full p-2 float-right sticky top-4 z-10 border-red-500 text-red-400 hover:bg-red-500 hover:text-black">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <div class="space-y-8">
+                <div class="space-y-8 clear-both">
                       <!-- Investigation Workspace -->
                       <div data-recon-type="all">
                           <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
@@ -472,6 +277,27 @@
                                   </div>
                                   <div id="history-container" class="mt-4 max-h-64 overflow-y-auto space-y-3 pr-2">
                                       <!-- History entries will be injected here -->
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- Settings -->
+                      <div data-recon-type="all">
+                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Settings</h2>
+                          <div class="space-y-4">
+                              <div>
+                                  <p class="text-gray-400 text-sm mb-2">// Theme</p>
+                                  <div class="flex gap-2">
+                                      <button id="theme-cyberpunk" class="hacker-btn text-sm p-2 w-full">[ Cyberpunk ]</button>
+                                      <button id="theme-matrix" class="hacker-btn text-sm p-2 w-full">[ Matrix ]</button>
+                                  </div>
+                              </div>
+                              <div>
+                                  <p class="text-gray-400 text-sm mb-2">// Animations</p>
+                                  <div class="space-y-2">
+                                      <label class="flex items-center justify-between"><span>Logo Animation</span><input type="checkbox" id="toggle-logo-animation" class="h-5 w-5"></label>
+                                      <label class="flex items-center justify-between"><span>Grid Animation</span><input type="checkbox" id="toggle-grid-animation" class="h-5 w-5"></label>
+                                      <label class="flex items-center justify-between"><span>Cursor Trail</span><input type="checkbox" id="toggle-cursor-trail" class="h-5 w-5"></label>
                                   </div>
                               </div>
                           </div>
@@ -594,10 +420,10 @@
             <div>
               <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Basic Recon Dorks</h2>
               <div class="dork-grid">
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN'><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN'><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login | inurl:signin | intitle:"Login" | intitle:"Sign In"'><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of"'><span class="dork-text">Open Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN' title="Find all pages indexed by Google for the target domain."><span class="dork-text">All Indexed Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.TARGET_DOMAIN -site:www.TARGET_DOMAIN' title="Discover subdomains of the target domain."><span class="dork-text">Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:login | inurl:signin | intitle:"Login" | intitle:"Sign In"' title="Find potential login portals."><span class="dork-text">Login Pages</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of"' title="Look for open directories that might expose files."><span class="dork-text">Open Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
               </div>
             </div>
 
@@ -605,12 +431,12 @@
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Credentials & Sensitive Keys</h2>
                 <div class="dork-grid">
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"'><span class="dork-text">AWS Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"'><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"'><span class="dork-text">Public .env Files</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "password" filetype:log'><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" ".ssh"'><span class="dork-text">Exposed SSH Dirs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:id_rsa -github'><span class="dork-text">Exposed SSH Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "AWS_ACCESS_KEY_ID" "AKIA"' title="Search for exposed AWS access keys."><span class="dork-text">AWS Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "api_key" | "apikey"' title="Find API keys that may have been left in public code."><span class="dork-text">Exposed API Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:env "DB_PASSWORD"' title="Look for public .env files containing database passwords."><span class="dork-text">Public .env Files</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "password" filetype:log' title="Search for passwords in log files."><span class="dork-text">Passwords in Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" ".ssh"' title="Find exposed SSH directories."><span class="dork-text">Exposed SSH Dirs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:id_rsa -github' title="Search for exposed SSH private keys."><span class="dork-text">Exposed SSH Keys</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
                 </div>
             </div>
             
@@ -618,9 +444,9 @@
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Backups & Database Dumps</h2>
                 <div class="dork-grid">
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump'><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Index of /" "backup"'><span class="dork-text">Backup Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"'><span class="dork-text">Compressed Backups</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:sql | ext:db | ext:mdb | ext:backup | ext:bak | ext:dump' title="Find database backups and dumps."><span class="dork-text">DB Backups & Dumps</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Index of /" "backup"' title="Look for backup directories."><span class="dork-text">Backup Directories</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:zip | filetype:tar "backup"' title="Find compressed backup files."><span class="dork-text">Compressed Backups</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
                 </div>
             </div>
 
@@ -628,9 +454,9 @@
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Sensitive Documents</h2>
                 <div class="dork-grid">
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"'><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"'><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"'><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "Internal use only" | "confidential"' title="Search for documents marked as internal or confidential."><span class="dork-text">Internal / Confidential</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:pdf | ext:doc | ext:docx "invoice" "paid"' title="Find receipts and invoices."><span class="dork-text">Receipts & Invoices</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN ext:xls | ext:xlsx "salary"' title="Look for spreadsheets containing salary information."><span class="dork-text">Salary Spreadsheets</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
                 </div>
             </div>
 
@@ -638,9 +464,9 @@
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Vulnerable Files & Server Info</h2>
                 <div class="dork-grid">
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"apache tomcat" "administration"'><span class="dork-text">Tomcat Admin</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" "ws_ftp.log"'><span class="dork-text">WS_FTP Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:log "inurl:wp-content"'><span class="dork-text">WordPress Debug Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"apache tomcat" "administration"' title="Find Apache Tomcat administration panels."><span class="dork-text">Tomcat Admin</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN intitle:"index of" "ws_ftp.log"' title="Look for WS_FTP log files."><span class="dork-text">WS_FTP Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN filetype:log "inurl:wp-content"' title="Find WordPress debug logs."><span class="dork-text">WordPress Debug Logs</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
                 </div>
             </div>
 
@@ -648,10 +474,10 @@
             <div>
                 <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Test Endpoints & Errors</h2>
                 <div class="dork-grid">
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN'><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"'><span class="dork-text">PHP Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN'><span class="dork-text">SQL Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
-                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:/proc/self/cwd'><span class="dork-text">LFI/Path Traversal</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:*.dev.TARGET_DOMAIN | site:*.stage.TARGET_DOMAIN | site:*.test.TARGET_DOMAIN' title="Find development, staging, and test subdomains."><span class="dork-text">Dev/Staging Subdomains</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN "PHP Fatal error" | "PHP Warning"' title="Search for PHP errors."><span class="dork-text">PHP Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='intext:"sql syntax near" | intext:"syntax error has occurred" site:TARGET_DOMAIN' title="Find SQL syntax errors."><span class="dork-text">SQL Errors</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
+                    <div class="dork-item p-2 flex items-center justify-between"><button class="w-full text-left p-2" data-dork='site:TARGET_DOMAIN inurl:/proc/self/cwd' title="Look for potential Local File Inclusion (LFI) or path traversal vulnerabilities."><span class="dork-text">LFI/Path Traversal</span></button><button class="copy-btn hacker-btn px-3 py-1 rounded-md text-sm">Copy</button></div>
                 </div>
             </div>
         </div>
@@ -726,7 +552,7 @@
         'external-netlas': { url: 'https://app.netlas.io/host/TARGET_QUERY/', name: 'Netlas.io' },
         'external-fofa': { url: 'https://en.fofa.info/result?qbase64=FOFA_B64_QUERY', name: 'FOFA' },
         'external-zoomeye': { url: 'https://www.zoomeye.org/searchResult?q=TARGET_QUERY', name: 'ZoomEye' },
-        'external-securityheaders': { url: 'https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on', name: 'SecurityHeaders.io' },
+        'external-securityheaders': { url: 'https://securityheaders.com/?q=TARGET_QUERY&followRedirects=on&hide=on', name: 'SecurityHeaders.io' },
         'external-crtsh': { url: 'https://crt.sh/?q=TARGET_QUERY', name: 'crt.sh' },
         'external-dnsdumpster': { url: 'https://dnsdumpster.com/', name: 'DNSdumpster' },
         'external-viewdns': { url: 'https://viewdns.info/whois/?domain=TARGET_QUERY', name: 'ViewDNS.info' },
