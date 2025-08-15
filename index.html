@@ -599,7 +599,7 @@
       const targetInput = document.getElementById('target-input');
       const errorMessage = document.getElementById('error-message');
       
-      const reconModeTabs = document.querySelectorAll('#recon-mode-container .tab-btn');
+      const reconModeTabs = document.querySelectorAll('#tutorial-step-2 .tab-btn');
       
       const profilerResultsContainer = document.getElementById('profiler-results-container');
       const profilerStatus = document.getElementById('profiler-status');
@@ -899,6 +899,42 @@
 
       let currentStepIndex = 0;
       let highlightedElement = null;
+      let tutorialRepositionHandler = null; // To hold the scroll listener function
+
+      function repositionTutorialPopover() {
+        if (!highlightedElement || tutorialStepContainer.classList.contains('hidden')) {
+            return;
+        }
+        const rect = highlightedElement.getBoundingClientRect();
+        const popover = tutorialStepContainer;
+        const popoverHeight = popover.offsetHeight;
+        const popoverWidth = popover.offsetWidth;
+        const currentStep = tutorialSteps[currentStepIndex];
+
+        if (currentStep && currentStep.element === '#tutorial-step-5') {
+            // Special positioning for the floating buttons in the bottom-left corner.
+            popover.style.left = `${rect.right + 15}px`;
+            popover.style.top = `${rect.bottom - popoverHeight}px`; // Align bottom of popover with bottom of element
+        } else {
+            // Default positioning logic for all other elements.
+            const spaceBelow = window.innerHeight - rect.bottom;
+
+            // Vertical positioning: If not enough space below, and there's space above, place it above.
+            if (spaceBelow < (popoverHeight + 20) && rect.top > popoverHeight + 20) {
+                popover.style.top = `${rect.top - popoverHeight - 10}px`;
+            } else {
+                // Default to below
+                popover.style.top = `${rect.bottom + 10}px`;
+            }
+
+            // Horizontal positioning: Adjust if it overflows the right edge of the viewport.
+            let leftPos = rect.left;
+            if (leftPos + popoverWidth > window.innerWidth) {
+                leftPos = window.innerWidth - popoverWidth - 20;
+            }
+            popover.style.left = `${Math.max(10, leftPos)}px`;
+        }
+      }
 
       function endTutorial() {
           tutorialOverlay.classList.add('hidden');
@@ -906,13 +942,21 @@
           if (highlightedElement) {
               highlightedElement.classList.remove('tutorial-highlight');
           }
+          if (tutorialRepositionHandler) {
+            window.removeEventListener('scroll', tutorialRepositionHandler);
+            tutorialRepositionHandler = null;
+          }
           localStorage.setItem('nexusReconTutorialCompleted', 'true');
       }
 
       function showTutorialStep(index) {
+          currentStepIndex = index; // Keep track of the current step index
           if (highlightedElement) {
               highlightedElement.classList.remove('tutorial-highlight');
               highlightedElement = null;
+          }
+          if (tutorialRepositionHandler) {
+            window.removeEventListener('scroll', tutorialRepositionHandler);
           }
 
           const step = tutorialSteps[index];
@@ -945,34 +989,18 @@
               if (targetElement) {
                   highlightedElement = targetElement;
                   highlightedElement.classList.add('tutorial-highlight');
-                  highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  
+                  // --- FIX: Only scroll if the element is NOT the fixed floating buttons ---
+                  if (step.element !== '#tutorial-step-5') {
+                    highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  
+                  tutorialRepositionHandler = repositionTutorialPopover;
+                  window.addEventListener('scroll', tutorialRepositionHandler);
 
-                  // A short delay to allow the smooth scroll to position the element
-                  // before we calculate the popover's position.
                   setTimeout(() => {
-                      const rect = highlightedElement.getBoundingClientRect();
-                      const popover = tutorialStepContainer;
-                      const popoverHeight = popover.offsetHeight;
-                      const popoverWidth = popover.offsetWidth;
-
-                      const spaceBelow = window.innerHeight - rect.bottom;
-
-                      // Vertical positioning: If not enough space below, and there's space above, place it above.
-                      if (spaceBelow < (popoverHeight + 20) && rect.top > popoverHeight + 20) {
-                          popover.style.top = `${rect.top - popoverHeight - 10}px`;
-                      } else {
-                          // Default to below
-                          popover.style.top = `${rect.bottom + 10}px`;
-                      }
-
-                      // Horizontal positioning: Adjust if it overflows the right edge of the viewport.
-                      let leftPos = rect.left;
-                      if (leftPos + popoverWidth > window.innerWidth) {
-                          leftPos = window.innerWidth - popoverWidth - 20; // 20px padding from the edge
-                      }
-                      popover.style.left = `${Math.max(10, leftPos)}px`; // Ensure it's not off-screen to the left
-
-                  }, 300); // 300ms delay for scroll animation
+                      repositionTutorialPopover(); // Initial positioning after scroll
+                  }, 300);
               }
           } else {
               // Center the last step
