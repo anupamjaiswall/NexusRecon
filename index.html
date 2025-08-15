@@ -60,6 +60,7 @@
         backdrop-filter: blur(8px);
     }
 
+    /* HUD Corner Brackets */
     .hacker-container::before, .hacker-container::after,
     .hacker-container > :first-child::before, .hacker-container > :first-child::after {
         content: '';
@@ -79,6 +80,7 @@
     .hacker-container > :first-child::before { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
     .hacker-container > :first-child::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
 
+    /* New Neon Glitch Animation */
     .glitch {
         position: relative;
         font-weight: 700;
@@ -148,16 +150,37 @@
     .shake-error { animation: shake-error-animation 0.82s cubic-bezier(.36,.07,.19,.97) both; }
     .tab-btn { background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); transition: all 0.3s ease; }
     .tab-btn.active { background-color: var(--primary-color); color: var(--bg-color); box-shadow: 0 0 15px var(--primary-color); }
-    #sidebar { position: fixed; bottom: 1rem; left: 1rem; z-index: 1000; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
-    #sidebar.open { pointer-events: auto; }
-    #sidebar-toggle { pointer-events: auto; transition: all 0.3s ease; }
-    #sidebar-panel { transform: translateX(-120%); opacity: 0; pointer-events: none; width: 90vw; max-width: 500px; max-height: 80vh; }
-    #sidebar.open #sidebar-panel { transform: translateX(0); opacity: 1; pointer-events: auto; }
-    #sidebar.open #sidebar-toggle { transform: scale(0); opacity: 0; }
+    
+    /* Panel Styles */
+    .side-panel { 
+        position: fixed; 
+        bottom: 1rem; 
+        transform: translateX(-120%); 
+        opacity: 0; 
+        pointer-events: none; 
+        width: 90vw; 
+        max-width: 500px; 
+        max-height: 80vh; 
+        transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
+        z-index: 1000; 
+        overflow-x: hidden; /* Added to prevent horizontal scrollbars */
+    }
+    .side-panel.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
+    #notes-panel { left: 1rem; }
+    #settings-panel { left: 1rem; }
+    #history-panel { left: 1rem; }
+
+
+    .floating-btn { position: fixed; z-index: 999; }
+    #settings-toggle { left: 1rem; bottom: 1rem; }
+    #history-toggle { left: 1rem; bottom: 6rem; }
+    #notes-toggle { left: 1rem; bottom: 11rem; }
+
+
     #live2d-widget canvas { filter: hue-rotate(220deg) saturate(1.5) drop-shadow(0 0 8px var(--accent-color)); transition: filter 0.5s ease; }
     #live2d-widget canvas:hover { filter: hue-rotate(280deg) saturate(2) drop-shadow(0 0 12px var(--primary-color)); }
     .content-hidden { filter: blur(8px); pointer-events: none; transition: filter 0.3s ease; }
-    .cursor { width: 30px; height: 30px; border: 2px solid var(--accent-color); border-radius: 50%; position: fixed; pointer-events: none; transform: translate(-50%, -50%); z-index: 10000; transition: transform 0.1s ease-out; box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), inset 0 0 5px var(--accent-color); display: flex; justify-content: center; align-items: center; }
+    .cursor { width: 30px; height: 30px; border: 2px solid var(--accent-color); border-radius: 50%; position: fixed; pointer-events: none; transform: translate(-50%, -50%); z-index: 10003; transition: transform 0.1s ease-out; box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), inset 0 0 5px var(--accent-color); display: flex; justify-content: center; align-items: center; }
     .cursor::before, .cursor::after { content: ''; position: absolute; background-color: var(--primary-color); box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); }
     .cursor::before { width: 2px; height: 10px; }
     .cursor::after { width: 10px; height: 2px; }
@@ -168,12 +191,36 @@
     @keyframes click-animation { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 80% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; } }
     .social-icon { color: var(--primary-color); transition: all 0.3s ease; filter: drop-shadow(0 0 5px var(--primary-color)); }
     .social-icon:hover { color: var(--accent-color); transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--accent-color)); }
+    
+    /* Tutorial Styles */
+    #tutorial-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+    }
+    .tutorial-highlight {
+        position: relative;
+        z-index: 10001;
+        box-shadow: 0 0 25px var(--primary-color), 0 0 15px var(--primary-color) inset;
+        border-radius: 0.375rem; /* 6px */
+    }
+    #tutorial-step-container {
+        position: fixed;
+        z-index: 10002;
+        max-width: 350px;
+        transition: all 0.3s ease-in-out;
+    }
+
     @media (max-width: 768px) { .cursor, .trail { display: none; } body, a, button, .copy-btn, .hacker-btn { cursor: auto; } }
   </style>
 </head>
 <body class="bg-gray-900 text-gray-200">
 
   <div class="cursor"></div>
+  
+  <div id="tutorial-overlay" class="hidden"></div>
+  <div id="tutorial-step-container" class="hidden"></div>
 
   <div id="disclaimer-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9998] backdrop-blur-sm">
       <div class="hacker-container rounded-lg p-6 w-full max-w-lg m-4 text-center">
@@ -200,10 +247,10 @@
 
     <main id="main-content">
       <!-- Target Input Section -->
-      <div class="mb-12 hacker-container p-6 rounded-lg">
+      <div id="tutorial-step-1" class="mb-12 hacker-container p-6 rounded-lg">
         <div> <!-- This extra div is for the corner brackets -->
             <label class="block text-lg font-medium text-cyan-400 mb-2">// Select Recon Mode & Enter Target:</label>
-            <div id="recon-mode-tabs" class="flex flex-wrap gap-2 mb-4">
+            <div id="tutorial-step-2" class="flex flex-wrap gap-2 mb-4">
                 <button class="tab-btn active py-2 px-4 rounded-md" data-mode="website">Website Recon</button>
                 <button class="tab-btn py-2 px-4 rounded-md" data-mode="user">User Recon</button>
             </div>
@@ -218,90 +265,123 @@
       <!-- Recon Modules -->
       <div class="space-y-10">
 
-        <!-- Investigation Workspace & History Sidebar -->
-        <div id="sidebar">
-            <button id="sidebar-toggle" class="hacker-btn p-4 rounded-full">
+        <!-- Floating Action Buttons -->
+        <div id="tutorial-step-5" class="fixed left-1 bottom-1 flex flex-col space-y-4">
+            <button id="notes-toggle" class="floating-btn hacker-btn p-4 rounded-full" title="Toggle Notes Panel">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             </button>
-            <div id="sidebar-panel" class="hacker-container p-6 rounded-lg overflow-y-auto">
-                <button id="sidebar-close" class="hacker-btn rounded-full p-2 float-right sticky top-4 z-10 border-red-500 text-red-400 hover:bg-red-500 hover:text-black">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <div class="space-y-8 clear-both">
-                      <!-- Investigation Workspace -->
-                      <div data-recon-type="all">
-                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
-                          <div class="space-y-4">
-                              <div>
-                                  <div class="flex justify-between items-center mb-4">
-                                      <p class="text-gray-400 text-sm">// Notes are saved per-target...</p>
-                                      <button id="clear-workspace" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear Workspace ]</button>
-                                  </div>
-                                  <div class="grid grid-cols-1 gap-4">
-                                      <div>
-                                          <label for="workspace-subdomains" class="block text-cyan-400 mb-2">Subdomains:</label>
-                                          <textarea id="workspace-subdomains" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com&#10;dev.example.com"></textarea>
-                                      </div>
-                                      <div>
-                                          <label for="workspace-emails" class="block text-cyan-400 mb-2">Email Addresses:</label>
-                                          <textarea id="workspace-emails" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="admin@example.com"></textarea>
-                                      </div>
-                                      <div>
-                                          <label for="workspace-ips" class="block text-cyan-400 mb-2">IP Addresses:</label>
-                                          <textarea id="workspace-ips" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="192.168.1.1"></textarea>
-                                      </div>
-                                      <div>
-                                          <label for="workspace-urls" class="block text-cyan-400 mb-2">Interesting URLs:</label>
-                                          <textarea id="workspace-urls" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com/login.php"></textarea>
-                                      </div>
-                                      <div>
-                                          <label for="workspace-notes" class="block text-cyan-400 mb-2">General Notes:</label>
-                                          <textarea id="workspace-notes" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="Found potential vulnerability in..."></textarea>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- Session History -->
-                      <div data-recon-type="all">
-                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History</h2>
-                          <div class="space-y-4">
-                              <div>
-                                  <div class="flex justify-between items-center">
-                                      <p class="text-gray-400 text-sm">// Your activity is saved locally...</p>
-                                      <button id="clear-history" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear History ]</button>
-                                  </div>
-                                  <div id="history-container" class="mt-4 max-h-64 overflow-y-auto space-y-3 pr-2">
-                                      <!-- History entries will be injected here -->
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- Settings -->
-                      <div data-recon-type="all">
-                          <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Settings</h2>
-                          <div class="space-y-4">
-                              <div>
-                                  <p class="text-gray-400 text-sm mb-2">// Theme</p>
-                                  <div class="flex gap-2">
-                                      <button id="theme-cyberpunk" class="hacker-btn text-sm p-2 w-full">[ Cyberpunk ]</button>
-                                      <button id="theme-matrix" class="hacker-btn text-sm p-2 w-full">[ Matrix ]</button>
-                                  </div>
-                              </div>
-                              <div>
-                                  <p class="text-gray-400 text-sm mb-2">// Animations</p>
-                                  <div class="space-y-2">
-                                      <label class="flex items-center justify-between"><span>Logo Animation</span><input type="checkbox" id="toggle-logo-animation" class="h-5 w-5"></label>
-                                      <label class="flex items-center justify-between"><span>Grid Animation</span><input type="checkbox" id="toggle-grid-animation" class="h-5 w-5"></label>
-                                      <label class="flex items-center justify-between"><span>Cursor Trail</span><input type="checkbox" id="toggle-cursor-trail" class="h-5 w-5"></label>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
+            <button id="settings-toggle" class="floating-btn hacker-btn p-4 rounded-full" title="Toggle Settings Panel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+            <button id="history-toggle" class="floating-btn hacker-btn p-4 rounded-full" title="Toggle Session History Panel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Investigation Workspace Panel -->
+        <div id="notes-panel" class="side-panel hacker-container p-6 rounded-lg overflow-y-auto">
+            <button id="notes-close" class="hacker-btn rounded-full p-2 float-right sticky top-4 z-10 border-red-500 text-red-400 hover:bg-red-500 hover:text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="space-y-8 clear-both">
+                <!-- Investigation Workspace -->
+                <div data-recon-type="all">
+                    <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Investigation Workspace</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <p class="text-gray-400 text-sm">// Notes are saved per-target...</p>
+                                <button id="clear-workspace" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear Workspace ]</button>
+                            </div>
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label for="workspace-subdomains" class="block text-cyan-400 mb-2">Subdomains:</label>
+                                    <textarea id="workspace-subdomains" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com&#10;dev.example.com"></textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-emails" class="block text-cyan-400 mb-2">Email Addresses:</label>
+                                    <textarea id="workspace-emails" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="admin@example.com"></textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-ips" class="block text-cyan-400 mb-2">IP Addresses:</label>
+                                    <textarea id="workspace-ips" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="192.168.1.1"></textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-urls" class="block text-cyan-400 mb-2">Interesting URLs:</label>
+                                    <textarea id="workspace-urls" rows="3" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="example.com/login.php"></textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-notes" class="block text-cyan-400 mb-2">General Notes:</label>
+                                    <textarea id="workspace-notes" rows="4" class="workspace-textarea w-full p-2 text-sm rounded-md" placeholder="Found potential vulnerability in..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Session History Panel -->
+        <div id="history-panel" class="side-panel hacker-container p-6 rounded-lg overflow-y-auto">
+            <button id="history-close" class="hacker-btn rounded-full p-2 float-right sticky top-4 z-10 border-red-500 text-red-400 hover:bg-red-500 hover:text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="space-y-8 clear-both">
+                <div data-recon-type="all">
+                    <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Session History</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-gray-400 text-sm">// Your activity is saved locally...</p>
+                                <button id="clear-history" class="hacker-btn text-xs p-2 border-red-500 text-red-400">[ Clear History ]</button>
+                            </div>
+                            <div id="history-container" class="mt-4 max-h-96 overflow-y-auto space-y-3 pr-2">
+                                <!-- History entries will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="side-panel hacker-container p-6 rounded-lg overflow-y-auto">
+            <button id="settings-close" class="hacker-btn rounded-full p-2 float-right sticky top-4 z-10 border-red-500 text-red-400 hover:bg-red-500 hover:text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="space-y-8 clear-both">
+                <div data-recon-type="all">
+                    <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Settings</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-gray-400 text-sm mb-2">// Theme</p>
+                            <div class="flex gap-2">
+                                <button id="theme-cyberpunk" class="hacker-btn text-sm p-2 w-full">[ Cyberpunk ]</button>
+                                <button id="theme-matrix" class="hacker-btn text-sm p-2 w-full">[ Matrix ]</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm mb-2">// Animations</p>
+                            <div class="space-y-2">
+                                <label class="flex items-center justify-between"><span>Logo Animation</span><input type="checkbox" id="toggle-logo-animation" class="h-5 w-5"></label>
+                                <label class="flex items-center justify-between"><span>Grid Animation</span><input type="checkbox" id="toggle-grid-animation" class="h-5 w-5"></label>
+                                <label class="flex items-center justify-between"><span>Cursor Trail</span><input type="checkbox" id="toggle-cursor-trail" class="h-5 w-5"></label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -346,7 +426,7 @@
             <h2 class="category-title text-2xl font-semibold border-b-2 border-fuchsia-500/50 pb-2 mb-4">>> Manual Investigation Modules</h2>
             <div class="space-y-10">
                 <!-- External Reconnaissance -->
-                <div class="hacker-container p-6 rounded-lg space-y-6">
+                <div id="tutorial-step-3" class="hacker-container p-6 rounded-lg space-y-6">
                     <div>
                         <h3 class="subcategory-title text-xl font-semibold mb-4">// OSINT & External Tools</h3>
                         <div class="dork-grid">
@@ -397,13 +477,13 @@
                             <button id="favicon-pivot" class="w-full hacker-btn font-bold py-3 px-6 rounded-md mt-4">
                                 [ Find by Favicon Hash (Shodan) ]
                             </button>
-                            <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:<hash>`.</p>
+                            <p class="text-xs text-gray-500 mt-2">// Note: This is a conceptual search. For accurate results, calculate the MurmurHash3 of the favicon and search Shodan for `http.favicon.hash:&lt;hash&gt;`.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Google Dorking Toggle -->
-                <div class="hacker-container p-6 rounded-lg" data-recon-type="website">
+                <div id="tutorial-step-4" class="hacker-container p-6 rounded-lg" data-recon-type="website">
                     <div>
                         <button id="toggle-dorking-modules" class="w-full hacker-btn p-3 font-bold text-xl">
                             [ Show Google Dorking Modules ]
@@ -511,6 +591,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // --- Element Selectors ---
+      const body = document.body;
       const mainContainer = document.querySelector('.container');
       const disclaimerModal = document.getElementById('disclaimer-modal');
       const agreeBtn = document.getElementById('agree-btn');
@@ -518,7 +599,7 @@
       const targetInput = document.getElementById('target-input');
       const errorMessage = document.getElementById('error-message');
       
-      const reconModeTabs = document.querySelectorAll('#recon-mode-tabs .tab-btn');
+      const reconModeTabs = document.querySelectorAll('#recon-mode-container .tab-btn');
       
       const profilerResultsContainer = document.getElementById('profiler-results-container');
       const profilerStatus = document.getElementById('profiler-status');
@@ -540,8 +621,29 @@
       const workspaceNotes = document.getElementById('workspace-notes');
       const workspaceElements = [workspaceSubdomains, workspaceEmails, workspaceIps, workspaceUrls, workspaceNotes];
 
-      const sidebar = document.getElementById('sidebar');
+      // Panel Selectors
+      const notesToggle = document.getElementById('notes-toggle');
+      const settingsToggle = document.getElementById('settings-toggle');
+      const historyToggle = document.getElementById('history-toggle');
+      const notesPanel = document.getElementById('notes-panel');
+      const settingsPanel = document.getElementById('settings-panel');
+      const historyPanel = document.getElementById('history-panel');
+      const notesClose = document.getElementById('notes-close');
+      const settingsClose = document.getElementById('settings-close');
+      const historyClose = document.getElementById('history-close');
+      const allPanels = [notesPanel, settingsPanel, historyPanel];
+
+      // Settings Controls Selectors
+      const themeCyberpunkBtn = document.getElementById('theme-cyberpunk');
+      const themeMatrixBtn = document.getElementById('theme-matrix');
+      const toggleLogoAnim = document.getElementById('toggle-logo-animation');
+      const toggleGridAnim = document.getElementById('toggle-grid-animation');
+      const toggleCursorTrail = document.getElementById('toggle-cursor-trail');
       
+      // Tutorial Selectors
+      const tutorialOverlay = document.getElementById('tutorial-overlay');
+      const tutorialStepContainer = document.getElementById('tutorial-step-container');
+
       let history = JSON.parse(localStorage.getItem('nexusReconHistory')) || [];
 
       // --- External Tools Data ---
@@ -580,6 +682,36 @@
         'external-syncme': { url: 'https://sync.me/search/?number=TARGET_QUERY', name: 'Sync.me' },
         'external-yandex': { url: 'https://yandex.com/search/?text=TARGET_QUERY', name: 'Yandex' },
         'external-ahmia': { url: 'https://ahmia.fi/search/?q=TARGET_QUERY', name: 'Ahmia.fi' }
+      };
+
+      // --- Settings Management ---
+      const defaultSettings = {
+          theme: 'cyberpunk',
+          logoAnim: true,
+          gridAnim: true,
+          cursorTrail: true
+      };
+
+      let currentSettings = JSON.parse(localStorage.getItem('nexusReconSettings')) || defaultSettings;
+
+      const saveSettings = () => {
+          localStorage.setItem('nexusReconSettings', JSON.stringify(currentSettings));
+      };
+
+      const applySettings = () => {
+          // Theme
+          body.classList.remove('theme-matrix');
+          if (currentSettings.theme === 'matrix') {
+              body.classList.add('theme-matrix');
+          }
+          // Animations
+          body.classList.toggle('no-logo-animation', !currentSettings.logoAnim);
+          body.classList.toggle('no-grid-animation', !currentSettings.gridAnim);
+          body.classList.toggle('no-trail', !currentSettings.cursorTrail);
+          // Update checkboxes
+          toggleLogoAnim.checked = currentSettings.logoAnim;
+          toggleGridAnim.checked = currentSettings.gridAnim;
+          toggleCursorTrail.checked = currentSettings.cursorTrail;
       };
 
       // --- Core Functions ---
@@ -652,6 +784,17 @@
           workspaceNotes.value = data.notes || '';
       };
 
+      // --- Panel Management ---
+      const togglePanel = (panelToToggle) => {
+          const isOpen = panelToToggle.classList.contains('open');
+          // Close all panels first
+          allPanels.forEach(p => p.classList.remove('open'));
+          // If the panel was closed, open it
+          if (!isOpen) {
+              panelToToggle.classList.add('open');
+          }
+      };
+
       // --- Recon Mode Switching ---
       const setReconMode = (mode) => {
           reconModeTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
@@ -721,19 +864,145 @@
         window.open(finalUrl, '_blank');
       };
       
+      // --- Tutorial Logic ---
+      const tutorialSteps = [
+        {
+            element: '#tutorial-step-1',
+            title: 'Step 1: The Target',
+            content: 'This is the main input area. Enter your target domain, company name, or username here to begin your reconnaissance.'
+        },
+        {
+            element: '#tutorial-step-2',
+            title: 'Step 2: Recon Mode',
+            content: 'Switch between "Website Recon" for domains and companies, or "User Recon" for usernames and emails. The available tools will adapt to your choice.'
+        },
+        {
+            element: '#tutorial-step-3',
+            title: 'Step 3: External Tools',
+            content: 'This is your arsenal. It contains a curated list of powerful OSINT tools. Clicking any button will open that tool in a new tab with your target pre-filled.'
+        },
+        {
+            element: '#tutorial-step-4',
+            title: 'Step 4: Google Dorking',
+            content: 'Click here to reveal a comprehensive library of Google Dorks, categorized for finding specific types of sensitive information.'
+        },
+        {
+            element: '#tutorial-step-5',
+            title: 'Step 5: Your Workspace',
+            content: 'These floating buttons open your side panels for Settings, Session History, and your Investigation Notes. Your notes are saved locally per target.'
+        },
+        {
+            title: 'Tutorial Complete!',
+            content: 'You\'re all set. Remember to use this tool responsibly and with proper authorization. Happy hacking!'
+        }
+      ];
+
+      let currentStepIndex = 0;
+      let highlightedElement = null;
+
+      function endTutorial() {
+          tutorialOverlay.classList.add('hidden');
+          tutorialStepContainer.classList.add('hidden');
+          if (highlightedElement) {
+              highlightedElement.classList.remove('tutorial-highlight');
+          }
+          localStorage.setItem('nexusReconTutorialCompleted', 'true');
+      }
+
+      function showTutorialStep(index) {
+          if (highlightedElement) {
+              highlightedElement.classList.remove('tutorial-highlight');
+              highlightedElement = null;
+          }
+
+          const step = tutorialSteps[index];
+          if (!step) {
+              endTutorial();
+              return;
+          }
+          
+          const isLastStep = index === tutorialSteps.length - 1;
+
+          tutorialStepContainer.innerHTML = `
+            <div class="hacker-container p-4 rounded-lg">
+                <div>
+                    <h3 class="category-title text-xl mb-2">${step.title}</h3>
+                    <p class="text-sm text-gray-300 mb-4">${step.content}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">${index + 1} / ${tutorialSteps.length}</span>
+                        <div>
+                            <button id="tutorial-skip" class="hacker-btn text-xs p-2 border-red-500 text-red-400">Skip</button>
+                            ${index > 0 ? `<button id="tutorial-prev" class="hacker-btn text-xs p-2 ml-2">[ Prev ]</button>` : ''}
+                            <button id="tutorial-next" class="hacker-btn text-xs p-2 ml-2">${isLastStep ? '[ Finish ]' : '[ Next ]'}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `;
+
+          if (step.element) {
+              const targetElement = document.querySelector(step.element);
+              if (targetElement) {
+                  highlightedElement = targetElement;
+                  highlightedElement.classList.add('tutorial-highlight');
+                  highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                  // A short delay to allow the smooth scroll to position the element
+                  // before we calculate the popover's position.
+                  setTimeout(() => {
+                      const rect = highlightedElement.getBoundingClientRect();
+                      const popover = tutorialStepContainer;
+                      const popoverHeight = popover.offsetHeight;
+                      const popoverWidth = popover.offsetWidth;
+
+                      const spaceBelow = window.innerHeight - rect.bottom;
+
+                      // Vertical positioning: If not enough space below, and there's space above, place it above.
+                      if (spaceBelow < (popoverHeight + 20) && rect.top > popoverHeight + 20) {
+                          popover.style.top = `${rect.top - popoverHeight - 10}px`;
+                      } else {
+                          // Default to below
+                          popover.style.top = `${rect.bottom + 10}px`;
+                      }
+
+                      // Horizontal positioning: Adjust if it overflows the right edge of the viewport.
+                      let leftPos = rect.left;
+                      if (leftPos + popoverWidth > window.innerWidth) {
+                          leftPos = window.innerWidth - popoverWidth - 20; // 20px padding from the edge
+                      }
+                      popover.style.left = `${Math.max(10, leftPos)}px`; // Ensure it's not off-screen to the left
+
+                  }, 300); // 300ms delay for scroll animation
+              }
+          } else {
+              // Center the last step
+              tutorialStepContainer.style.top = '50%';
+              tutorialStepContainer.style.left = '50%';
+              tutorialStepContainer.style.transform = 'translate(-50%, -50%)';
+          }
+
+          document.getElementById('tutorial-next').addEventListener('click', () => showTutorialStep(index + 1));
+          if (index > 0) {
+            document.getElementById('tutorial-prev').addEventListener('click', () => showTutorialStep(index - 1));
+          }
+          document.getElementById('tutorial-skip').addEventListener('click', endTutorial);
+      }
+
+      function startTutorial() {
+          if (localStorage.getItem('nexusReconTutorialCompleted')) {
+              return;
+          }
+          tutorialOverlay.classList.remove('hidden');
+          tutorialStepContainer.classList.remove('hidden');
+          currentStepIndex = 0;
+          showTutorialStep(currentStepIndex);
+      }
+
       // --- EVENT DELEGATION ---
       document.body.addEventListener('click', (e) => {
           const target = e.target;
           const targetId = target.id;
           
-          // Sidebar Toggle
-          if (target.closest('#sidebar-toggle')) {
-              sidebar.classList.add('open');
-          }
-          if (target.closest('#sidebar-close')) {
-              sidebar.classList.remove('open');
-          }
-
           // Dork Items
           const dorkItem = target.closest('.dork-item');
           if (dorkItem) {
@@ -776,17 +1045,17 @@
                       { name: 'Exposed Docs', dork: 'site:TARGET_DOMAIN ext:pdf | ext:docx "confidential"' }
                   ];
                   setTimeout(() => {
-                    typeEffect(profilerStatus, `>> Profile for [${profilerTarget}] complete:`, 30, () => {
-                        profilerDorks.forEach((item, index) => {
-                            setTimeout(() => {
-                                const finalDork = item.dork.replace(/TARGET_DOMAIN/g, profilerTarget);
-                                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
-                                profilerResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${item.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ View Results ]</a></div>`;
-                            }, index * 100);
-                        });
-                    });
+                      typeEffect(profilerStatus, `>> Profile for [${profilerTarget}] complete:`, 30, () => {
+                          profilerDorks.forEach((item, index) => {
+                              setTimeout(() => {
+                                  const finalDork = item.dork.replace(/TARGET_DOMAIN/g, profilerTarget);
+                                  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                                  profilerResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${item.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ View Results ]</a></div>`;
+                              }, index * 100);
+                          });
+                      });
                   }, 1000);
-                break;
+                  break;
               case 'identify-tech':
                   const techTarget = getActiveTarget();
                   if (!techTarget) { handleMissingTarget(); return; }
@@ -803,17 +1072,17 @@
                       { name: 'Adobe AEM', dork: 'site:TARGET_DOMAIN inurl:/content/dam' }
                   ];
                   setTimeout(() => {
-                    typeEffect(techStatus, `>> Tech stack scan for [${techTarget}] complete:`, 30, () => {
-                        techDorks.forEach((tech, index) => {
-                            setTimeout(() => {
-                                const finalDork = tech.dork.replace(/TARGET_DOMAIN/g, techTarget);
-                                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
-                                techResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${tech.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ Check ]</a></div>`;
-                            }, index * 100);
-                        });
-                    });
+                      typeEffect(techStatus, `>> Tech stack scan for [${techTarget}] complete:`, 30, () => {
+                          techDorks.forEach((tech, index) => {
+                              setTimeout(() => {
+                                  const finalDork = tech.dork.replace(/TARGET_DOMAIN/g, techTarget);
+                                  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(finalDork)}`;
+                                  techResultsList.innerHTML += `<div class="flex justify-between items-center"><span>- ${tech.name}.......</span><a href="${searchUrl}" target="_blank" class="hacker-btn text-sm px-3 py-1 rounded-md">[ Check ]</a></div>`;
+                              }, index * 100);
+                          });
+                      });
                   }, 1000);
-                break;
+                  break;
               case 'favicon-pivot':
                   openExternalTool('https://www.shodan.io/search?query=http.html:"TARGET_QUERY"', 'Favicon Pivot');
                   break;
@@ -839,6 +1108,42 @@
 
       // --- Individual Listeners for Non-Delegated Actions ---
       
+      // Panel Toggles
+      notesToggle.addEventListener('click', () => togglePanel(notesPanel));
+      settingsToggle.addEventListener('click', () => togglePanel(settingsPanel));
+      historyToggle.addEventListener('click', () => togglePanel(historyPanel));
+      notesClose.addEventListener('click', () => notesPanel.classList.remove('open'));
+      settingsClose.addEventListener('click', () => settingsPanel.classList.remove('open'));
+      historyClose.addEventListener('click', () => historyPanel.classList.remove('open'));
+
+
+      // Settings Controls
+      themeCyberpunkBtn.addEventListener('click', () => {
+          currentSettings.theme = 'cyberpunk';
+          saveSettings();
+          applySettings();
+      });
+      themeMatrixBtn.addEventListener('click', () => {
+          currentSettings.theme = 'matrix';
+          saveSettings();
+          applySettings();
+      });
+      toggleLogoAnim.addEventListener('change', (e) => {
+          currentSettings.logoAnim = e.target.checked;
+          saveSettings();
+          applySettings();
+      });
+      toggleGridAnim.addEventListener('change', (e) => {
+          currentSettings.gridAnim = e.target.checked;
+          saveSettings();
+          applySettings();
+      });
+      toggleCursorTrail.addEventListener('change', (e) => {
+          currentSettings.cursorTrail = e.target.checked;
+          saveSettings();
+          applySettings();
+      });
+
       // Recon Mode Tabs
       reconModeTabs.forEach(tab => {
           tab.addEventListener('click', () => {
@@ -868,6 +1173,9 @@
           disclaimerModal.style.display = 'none';
           mainContainer.classList.remove('content-hidden');
           
+          // Start tutorial on first visit after agreeing
+          setTimeout(startTutorial, 500);
+
           // Initialize Live2D Widget AFTER user agrees
           try {
             L2Dwidget.init({
@@ -883,6 +1191,7 @@
           }
       });
 
+      applySettings();
       renderHistory();
       loadWorkspaceData();
       setReconMode('website');
