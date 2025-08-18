@@ -6,7 +6,7 @@ Let's be real. You're deep into a recon session. You have 37 tabs open, you've m
 
 That's exactly why NexusRecon was born. I was tired of the digital juggling act. This project started as a personal mission to build a centralized, cyberpunk-themed command center to automate the boring stuff and get straight to the good stuff.
 
-And yes, this entire project was built with a little help from my AI sidekick, proving that the future of hacking involves both human ingenuity and a bit of machine magic.
+And yes, this entire project was built with the help of AI.
 
 **NexusRecon** is a web-based reconnaissance tool for security pros and bug bounty hunters who'd rather spend their time finding bugs than managing tabs. It's your one-stop-shop for OSINT and external recon, all wrapped in a sleek, neon-drenched interface.
 
